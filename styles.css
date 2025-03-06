@@ -1,0 +1,324 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#mode-selection {
+    margin: 20px 0;
+}
+
+#mode-selection button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#mode-selection button:hover {
+    background-color: #1976D2;
+}
+
+#controls {
+    margin-bottom: 20px;
+}
+
+#controls button {
+    padding: 5px 10px;
+    font-size: 16px;
+    margin: 0 5px;
+    cursor: pointer;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+}
+
+#controls button:last-of-type {
+    background-color: #FF5722; /* Back 按钮为橙色 */
+}
+
+#controls button:last-of-type:hover {
+    background-color: #F4511E;
+}
+
+#controls button:hover {
+    background-color: #1976D2;
+}
+
+#practice-mode {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.tabs {
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    padding: 8px 16px;
+    font-size: 16px;
+    margin: 0 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+}
+
+.tabs button.active {
+    background-color: #2196F3;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+#practice-word {
+    margin: 20px 0;
+}
+
+#practice-word h3 {
+    font-size: 36px;
+    margin: 10px 0;
+}
+
+#practice-word p {
+    margin: 5px 0;
+}
+
+#practice-animation-gif {
+    display: block;
+    border: 1px solid #ccc;
+    margin: 10px auto;
+}
+
+#animation-fallback {
+    margin: 10px 0;
+}
+
+#practice-animation {
+    border: 1px solid #ccc;
+    margin: 10px auto;
+}
+
+.flashcard {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    transition: transform 0.6s;
+}
+
+.flashcard-front {
+    transform: rotateY(0deg);
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-front {
+    transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-back {
+    transform: rotateY(0deg);
+}
+
+#flashcard-hanzi {
+    font-size: 48px;
+    margin: 0;
+}
+
+#flashcard-pinyin, #flashcard-meaning {
+    margin: 5px 0;
+}
+
+#practice-mode button:nth-of-type(1) {
+    background-color: #2196F3; /* Play Stroke Animation 按钮为蓝色 */
+    color: white;
+    border: none;
+}
+
+#practice-mode button:nth-of-type(1):hover {
+    background-color: #1976D2;
+}
+
+#practice-mode button:nth-of-type(2) {
+    background-color: #4CAF50; /* Next 按钮为绿色 */
+    color: white;
+    border: none;
+}
+
+#practice-mode button:nth-of-type(2):hover {
+    background-color: #45a049;
+}
+
+#practice-mode button:last-of-type {
+    background-color: #FF5722; /* Back 按钮为橙色 */
+    color: white;
+    border: none;
+}
+
+#practice-mode button:last-of-type:hover {
+    background-color: #F4511E;
+}
+
+#highest-score {
+    font-size: 18px;
+    color: #FF9800;
+    margin-bottom: 10px;
+}
+
+#level {
+    font-size: 18px;
+    color: #2196F3;
+    margin-bottom: 10px;
+}
+
+#score {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+#current-score {
+    color: #4CAF50; /* 当前关卡分数为绿色 */
+}
+
+#total-score {
+    color: #FF9800; /* 累计分数为橙色 */
+}
+
+#level-complete {
+    margin-top: 20px;
+    color: #4CAF50;
+    font-size: 18px;
+}
+
+#level-complete h3 {
+    margin: 5px 0;
+}
+
+#level-complete p {
+    margin: 5px 0;
+}
+
+#level-total {
+    margin-top: 20px;
+    color: #2196F3;
+    font-size: 18px;
+}
+
+#level-total h3 {
+    margin: 5px 0;
+}
+
+#level-total p {
+    margin: 5px 0;
+}
+
+#level-1-errors {
+    margin-top: 20px;
+    color: #FF5722;
+    font-size: 18px;
+}
+
+#level-1-errors h3 {
+    margin: 5px 0;
+}
+
+#level-1-errors p {
+    margin: 5px 0;
+}
+
+#wrong-words-list {
+    margin: 10px 0;
+    font-size: 24px;
+}
+
+#hanzi-container, #pinyin-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    margin: 10px;
+    border: 2px solid #ccc;
+    cursor: move;
+    background: #f9f9f9;
+    font-size: 24px;
+}
+
+.drop-zone {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+    border: 2px dashed #666;
+    line-height: 80px;
+    font-size: 18px;
+}
+
+.correct { background: #90ee90; }
+.wrong { background: #ff6347; }
+
+#celebration {
+    margin-top: 20px;
+    color: #4CAF50;
+    font-size: 24px;
+}
+
+#celebration h3 {
+    margin: 10px 0;
+}
+
+#celebration button {
+    padding: 5px 10px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+#celebration button:first-of-type {
+    background-color: #2196F3; /* Try Again 按钮为蓝色 */
+    color: white;
+    border: none;
+}
+
+#celebration button:first-of-type:hover {
+    background-color: #1976D2;
+}
+
+#celebration button:last-of-type {
+    background-color: #FF5722; /* Done 按钮为橙色 */
+    color: white;
+    border: none;
+}
+
+#celebration button:last-of-type:hover {
+    background-color: #F4511E;
+}

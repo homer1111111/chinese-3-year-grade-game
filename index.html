@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第九课 蔡伦造纸 (Chapter 9 - Cai Lun Invented the Paper)</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 引入 Hanzi Writer 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
+</head>
+<body>
+    <h1>第九课 蔡伦造纸 (Chapter 9 - Cai Lun Invented the Paper)</h1>
+    <p>蔡伦发明了造纸术，使用竹子和布等材料，制作出纸张，取代了不便的书写工具。<br>Cai Lun invented papermaking, using materials like bamboo and cloth to create paper, replacing inconvenient writing tools.</p>
+    
+    <!-- 模式选择 (Mode Selection) -->
+    <div id="mode-selection">
+        <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
+        <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
+    </div>
+
+    <!-- 练习模式区域 (Practice Mode Section) -->
+    <div id="practice-mode" style="display: none;">
+        <h2>练习模式 (Practice Mode)</h2>
+        <!-- 选项卡导航 -->
+        <div class="tabs">
+            <button onclick="showTab('stroke-tab')">笔画笔顺 (Stroke Order)</button>
+            <button onclick="showTab('flashcard-tab')">字卡 (Flashcard)</button>
+        </div>
+
+        <!-- 笔画笔顺选项卡 -->
+        <div id="stroke-tab" class="tab-content" style="display: block;">
+            <div id="practice-word">
+                <h3 id="practice-hanzi"></h3>
+                <p id="practice-strokes"></p>
+                <img id="practice-animation-gif" style="width: 150px; height: 150px; margin: 0 auto;" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('animation-fallback').style.display='block';">
+                <div id="animation-fallback" style="display: none;">
+                    <div id="practice-animation" style="width: 150px; height: 150px; margin: 0 auto;"></div>
+                    <button onclick="animateStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 字卡选项卡 -->
+        <div id="flashcard-tab" class="tab-content" style="display: none;">
+            <div class="flashcard" onclick="flipCard()">
+                <div class="flashcard-front">
+                    <h3 id="flashcard-hanzi"></h3>
+                </div>
+                <div class="flashcard-back">
+                    <p id="flashcard-pinyin"></p>
+                    <p id="flashcard-meaning"></p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="nextPracticeWord()">下一个 (Next)</button>
+        <button onclick="exitPracticeMode()">返回 (Back)</button>
+    </div>
+
+    <!-- 游戏模式区域 (Game Mode Section) -->
+    <div id="game-mode" style="display: none;">
+        <h2>游戏模式 (Game Mode)</h2>
+        <p>将汉字拖到正确的拼音上！(Drag the Chinese characters to the correct pinyin!)</p>
+        
+        <!-- 操作按钮 (Control Buttons) -->
+        <div id="controls">
+            <button onclick="saveGame()">保存进度 (save)</button>
+            <button onclick="loadGame()">读取进度 (open)</button>
+            <button onclick="startOver()">重新开始 (start over)</button>
+            <button onclick="exitGameMode()">返回 (Back)</button>
+        </div>
+
+        <!-- 历史最高分数 (Highest Score) -->
+        <div id="highest-score">历史最高分数: 0 (Highest Score: 0)</div>
+
+        <!-- 关卡提示 (Level Indicator) -->
+        <div id="level">当前关卡: 1-1 (Current Level: 1-1)</div>
+
+        <!-- 分数 (Score) -->
+        <div id="score">
+            <span id="current-score">当前关卡分数: 0 (Current Level Score: 0)</span> | 
+            <span id="total-score">累计分数: 0 (Total Score: 0)</span>
+        </div>
+
+        <!-- 小关完成提示 (Sub-Level Complete) -->
+        <div id="level-complete" style="display: none;">
+            <h3 id="level-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+
+        <!-- 大关卡总分提示 (Level Total Score) -->
+        <div id="level-total" style="display: none;">
+            <h3 id="level-total-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+
+        <!-- 关卡 1 错误整理 (Level 1 Error Correction) -->
+        <div id="level-1-errors" style="display: none;">
+            <h3>关卡 1 错误汉字整理 (Level 1 Error Correction)</h3>
+            <p>请将以下错误汉字正确匹配以进入下一关：(Please match the following incorrect characters to proceed to the next level:)</p>
+            <div id="wrong-words-list"></div>
+        </div>
+
+        <!-- 汉字卡片 (Chinese Character Cards) -->
+        <div id="hanzi-container">
+            <!-- 动态生成 (Dynamically Generated) -->
+        </div>
+
+        <!-- 拼音区域 (Pinyin Drop Zones) -->
+        <div id="pinyin-container">
+            <!-- 动态生成 (Dynamically Generated) -->
+        </div>
+
+        <!-- 庆祝消息（最后一关）(Celebration Message - Final Level) -->
+        <div id="celebration" style="display: none;">
+            <h2>太棒了！你通过了所有关卡！(Great Job! You’ve Passed All Levels!)</h2>
+            <h3 id="final-score"></h3>
+            <h3 id="final-highest-score"></h3>
+            <button onclick="tryAgain()">再试一次 (Try Again)</button>
+            <button onclick="done()">完成 (Done)</button>
+        </div>
+    </div>
+
+    <!-- 音效（Hooray音效）(Sound Effect - Hooray) -->
+    <audio id="celebrate-sound" src="https://freesound.org/data/previews/159/159402_1676144-lq.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
