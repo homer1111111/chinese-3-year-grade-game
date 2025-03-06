@@ -3,8 +3,6 @@
 <head>
     <title>三年级中文游戏</title>
     <meta charset="UTF-8">
-    <!-- 可选：添加 favicon -->
-    <link rel="icon" href="/chinese-3-year-grade-game/favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div id="mode-selection">
@@ -27,7 +25,7 @@
         <button onclick="animateStrokeOrder()">播放笔顺</button>
         <button onclick="exitPracticeMode()">退出</button>
     </div>
-    <div id="game-mode" style="display: none;">
+    <div id="game-mode">
         <div id="level"></div>
         <div id="current-score"></div>
         <div id="total-score"></div>
@@ -55,7 +53,6 @@
     </div>
     <div id="highest-score"></div>
 
-    <!-- 确保脚本只加载一次 -->
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
     <script src="/chinese-3-year-grade-game/script.js"></script>
 </body>
