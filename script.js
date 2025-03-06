@@ -1,6 +1,4 @@
-// 确保 DOM 加载后再执行代码
 document.addEventListener('DOMContentLoaded', function() {
-    // 汉字和拼画数据（按小关分配）
     const allWords = {
         'level-1-1': [
             { hanzi: '造', pinyin: 'zào', meaningCn: '制造', meaningEn: 'to make, to build', strokeCount: 12, animation: 'https://bishun.gjcha.com/9020.gif' },
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ]
     };
 
-    // 练习模式的所有汉字列表（去重）
     const allUniqueWords = [
         { hanzi: '造', pinyin: 'zào', meaningCn: '制造', meaningEn: 'to make, to build', strokeCount: 12, animation: 'https://bishun.gjcha.com/9020.gif' },
         { hanzi: '纸', pinyin: 'zhǐ', meaningCn: '纸张', meaningEn: 'paper', strokeCount: 7, animation: 'https://bishun.gjcha.com/7EB8.gif' },
@@ -71,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
         { hanzi: '之', pinyin: 'zhī', meaningCn: '代词，表示“的”', meaningEn: 'possessive particle, "of"', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E4B.gif' }
     ];
 
-    // 全局变量定义
     let score = 0;
     let totalScore = 0;
     let level1Score = 0;
@@ -88,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentTab = 'stroke-tab';
     let isFlipped = false;
 
-    // DOM 元素获取
     const modeSelection = document.getElementById('mode-selection');
     const currentScoreDisplay = document.getElementById('current-score');
     const totalScoreDisplay = document.getElementById('total-score');
@@ -117,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const flashcardPinyin = document.getElementById('flashcard-pinyin');
     const flashcardMeaning = document.getElementById('flashcard-meaning');
 
-    // 检查关键 DOM 元素是否存在
     if (!highestScoreDisplay) {
         console.error("未找到 ID 为 'highest-score' 的元素，请检查 HTML！");
         return;
@@ -127,10 +121,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // 初始化显示历史最高分数
     highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
-    // 随机打乱数组
+    // 初始化游戏模式
+    setLevel(currentLevel, currentSubLevel);
+    updateScoreDisplay();
+
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -139,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return array;
     }
 
-    // 进入练习模式
     function startPracticeMode() {
         practiceIndex = 0;
         practiceWords = shuffle([...allUniqueWords]);
@@ -151,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showPracticeWord();
     }
 
-    // 进入游戏模式
     function startGameMode() {
         modeSelection.style.display = 'none';
         practiceMode.style.display = 'none';
@@ -159,14 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
         setLevel(currentLevel, currentSubLevel);
     }
 
-    // 退出游戏模式
     function exitGameMode() {
         gameMode.style.display = 'none';
         practiceMode.style.display = 'none';
         modeSelection.style.display = 'block';
     }
 
-    // 显示当前练习汉字
     function showPracticeWord() {
         const word = practiceWords[practiceIndex];
         
@@ -202,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
         flashcard.classList.remove('flipped');
     }
 
-    // 切换选项卡
     function showTab(tabId) {
         currentTab = tabId;
         const tabs = document.querySelectorAll('.tab-content');
@@ -216,18 +207,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeButton) activeButton.classList.add('active');
     }
 
-    // 翻转字卡
     function flipCard() {
         isFlipped = !isFlipped;
         flashcard.classList.toggle('flipped', isFlipped);
     }
 
-    // 播放笔顺动画
     function animateStrokeOrder() {
         if (hanziWriter) hanziWriter.animateCharacter();
     }
 
-    // 下一个练习汉字
     function nextPracticeWord() {
         practiceIndex++;
         if (practiceIndex < practiceWords.length) {
@@ -237,20 +225,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 退出练习模式
     function exitPracticeMode() {
         practiceMode.style.display = 'none';
-        gameMode.style.display = 'none';
+        gameMode.style.display = 'block';
         modeSelection.style.display = 'block';
     }
 
-    // 更新分数显示
     function updateScoreDisplay() {
         currentScoreDisplay.textContent = `当前关卡分数: ${score} (Current Level Score: ${score})`;
         totalScoreDisplay.textContent = `累计分数: ${totalScore} (Total Score: ${totalScore})`;
     }
 
-    // 保存游戏进度
     function saveGame() {
         const gameState = {
             score, totalScore, level1Score, level2Score,
@@ -261,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('游戏进度已保存！(Game Progress Saved!)');
     }
 
-    // 加载游戏进度
     function loadGame() {
         const savedState = localStorage.getItem('chineseGameState');
         if (savedState) {
@@ -287,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 重新开始游戏
     function startOver() {
         localStorage.removeItem('chineseGameState');
         score = 0;
@@ -302,18 +285,15 @@ document.addEventListener('DOMContentLoaded', function() {
         setLevel(1, 1);
     }
 
-    // Try Again 功能
     function tryAgain() {
         localStorage.removeItem('chineseGameState');
         location.reload();
     }
 
-    // Done 功能
     function done() {
         window.close();
     }
 
-    // 修正关卡 1 的错误汉字
     function fixLevel1Errors() {
         isFixingErrors = true;
         levelDisplay.textContent = `关卡 1 错误整理 (Level 1 Error Correction)`;
@@ -355,7 +335,6 @@ document.addEventListener('DOMContentLoaded', function() {
         bindDragAndDrop();
     }
 
-    // 设置关卡
     function setLevel(level, subLevel) {
         currentLevel = level;
         currentSubLevel = subLevel;
@@ -406,7 +385,6 @@ document.addEventListener('DOMContentLoaded', function() {
         bindDragAndDrop();
     }
 
-    // 拖放逻辑
     function bindDragAndDrop() {
         const cards = document.querySelectorAll('.card');
         const dropZones = document.querySelectorAll('.drop-zone');
@@ -465,9 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
                                 }
                                 finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-                                // 删除音频播放相关逻辑
                                 setTimeout(() => {
-                                    celebration.style.display = 'none'; // 简单隐藏庆祝界面
+                                    celebration.style.display = 'none';
                                 }, 3000);
                             }, 2000);
                         } else if (currentLevel === 1 && currentSubLevel === 3) {
