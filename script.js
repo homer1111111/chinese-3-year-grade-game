@@ -1,54 +1,3 @@
-let score = 0; // 当前小关分数
-let totalScore = 0; // 累计总分
-let level1Score = 0; // 关卡 1 总分
-let level2Score = 0; // 关卡 2 总分
-let currentLevel = 1; // 当前大关卡
-let currentSubLevel = 1; // 当前小关卡
-let wrongWords = []; // 记录错误汉字
-let level1WrongWords = []; // 专门记录关卡 1 的错误汉字
-let isFixingErrors = false; // 是否在修正关卡 1 错误模式
-let highestScore = parseInt(localStorage.getItem('highestScore')) || 0; // 历史最高分数
-let practiceIndex = 0; // 练习模式当前汉字索引
-let practiceWords = []; // 练习模式汉字列表
-let hanziWriter = null; // HanziWriter 实例
-let currentTab = 'stroke-tab'; // 当前选项卡，默认为“笔画笔顺”
-let isFlipped = false; // 字卡是否翻转
-
-const modeSelection = document.getElementById('mode-selection');
-const currentScoreDisplay = document.getElementById('current-score');
-const totalScoreDisplay = document.getElementById('total-score');
-const levelDisplay = document.getElementById('level');
-const levelComplete = document.getElementById('level-complete');
-const levelScoreDisplay = document.getElementById('level-score');
-const levelTotal = document.getElementById('level-total');
-const levelTotalScoreDisplay = document.getElementById('level-total-score');
-const level1Errors = document.getElementById('level-1-errors');
-const wrongWordsList = document.getElementById('wrong-words-list');
-const hanziContainer = document.getElementById('hanzi-container');
-const pinyinContainer = document.getElementById('pinyin-container');
-const celebration = document.getElementById('celebration');
-const finalScoreDisplay = document.getElementById('final-score');
-const finalHighestScoreDisplay = document.getElementById('final-highest-score');
-const highestScoreDisplay = document.getElementById('highest-score');
-const practiceMode = document.getElementById('practice-mode');
-const gameMode = document.getElementById('game-mode');
-const practiceHanzi = document.getElementById('practice-hanzi');
-const practiceStrokes = document.getElementById('practice-strokes');
-const practiceAnimationGif = document.getElementById('practice-animation-gif');
-const animationFallback = document.getElementById('animation-fallback');
-const practiceAnimation = document.getElementById('practice-animation');
-const celebrateSound = document.getElementById('celebrate-sound');
-const controls = document.getElementById('controls');
-const highestScoreDiv = document.getElementById('highest-score');
-const scoreDiv = document.getElementById('score');
-const flashcard = document.querySelector('.flashcard');
-const flashcardHanzi = document.getElementById('flashcard-hanzi');
-const flashcardPinyin = document.getElementById('flashcard-pinyin');
-const flashcardMeaning = document.getElementById('flashcard-meaning');
-
-// 初始化显示历史最高分数
-highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-
 // 汉字和拼画数据（按小关分配）
 const allWords = {
     'level-1-1': [
@@ -119,6 +68,59 @@ const allUniqueWords = [
     { hanzi: '干', pinyin: 'gān', meaningCn: '干燥', meaningEn: 'dry', strokeCount: 3, animation: 'https://bishun.gjcha.com/5E72.gif' },
     { hanzi: '之', pinyin: 'zhī', meaningCn: '代词，表示“的”', meaningEn: 'possessive particle, "of"', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E4B.gif' }
 ];
+
+// 全局变量定义
+let score = 0; // 当前小关分数
+let totalScore = 0; // 累计总分
+let level1Score = 0; // 关卡 1 总分
+let level2Score = 0; // 关卡 2 总分
+let currentLevel = 1; // 当前大关卡
+let currentSubLevel = 1; // 当前小关卡
+let wrongWords = []; // 记录错误汉字
+let level1WrongWords = []; // 专门记录关卡 1 的错误汉字
+let isFixingErrors = false; // 是否在修正关卡 1 错误模式
+let highestScore = parseInt(localStorage.getItem('highestScore')) || 0; // 历史最高分数
+let practiceIndex = 0; // 练习模式当前汉字索引
+let practiceWords = []; // 练习模式汉字列表
+let hanziWriter = null; // HanziWriter 实例
+let currentTab = 'stroke-tab'; // 当前选项卡，默认为“笔画笔顺”
+let isFlipped = false; // 字卡是否翻转
+
+// DOM 元素获取
+const modeSelection = document.getElementById('mode-selection');
+const currentScoreDisplay = document.getElementById('current-score');
+const totalScoreDisplay = document.getElementById('total-score');
+const levelDisplay = document.getElementById('level');
+const levelComplete = document.getElementById('level-complete');
+const levelScoreDisplay = document.getElementById('level-score');
+const levelTotal = document.getElementById('level-total');
+const levelTotalScoreDisplay = document.getElementById('level-total-score');
+const level1Errors = document.getElementById('level-1-errors');
+const wrongWordsList = document.getElementById('wrong-words-list');
+const hanziContainer = document.getElementById('hanzi-container');
+const pinyinContainer = document.getElementById('pinyin-container');
+const celebration = document.getElementById('celebration');
+const finalScoreDisplay = document.getElementById('final-score');
+const finalHighestScoreDisplay = document.getElementById('final-highest-score');
+const highestScoreDisplay = document.getElementById('highest-score');
+const practiceMode = document.getElementById('practice-mode');
+const gameMode = document.getElementById('game-mode');
+const practiceHanzi = document.getElementById('practice-hanzi');
+const practiceStrokes = document.getElementById('practice-strokes');
+const practiceAnimationGif = document.getElementById('practice-animation-gif');
+const animationFallback = document.getElementById('animation-fallback');
+const practiceAnimation = document.getElementById('practice-animation');
+const celebrateSound = document.getElementById('celebrate-sound');
+const controls = document.getElementById('controls');
+const highestScoreDiv = document.getElementById('highest-score');
+const scoreDiv = document.getElementById('score');
+const flashcard = document.querySelector('.flashcard');
+const flashcardHanzi = document.getElementById('flashcard-hanzi');
+const flashcardPinyin = document.getElementById('flashcard-pinyin');
+const flashcardMeaning = document.getElementById('flashcard-meaning');
+
+// 初始化显示历史最高分数
+highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
 // 随机打乱数组
 function shuffle(array) {
