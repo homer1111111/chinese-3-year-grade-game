@@ -112,8 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const practiceAnimationGif = document.getElementById('practice-animation-gif');
     const animationFallback = document.getElementById('animation-fallback');
     const practiceAnimation = document.getElementById('practice-animation');
-    const celebrateSound = document.getElementById('celebrate-sound');
-    const controls = document.getElementById('controls');
     const flashcard = document.querySelector('.flashcard');
     const flashcardHanzi = document.getElementById('flashcard-hanzi');
     const flashcardPinyin = document.getElementById('flashcard-pinyin');
@@ -467,10 +465,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
                                 }
                                 finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-                                celebrateSound.play();
+                                // 删除音频播放相关逻辑
                                 setTimeout(() => {
-                                    celebrateSound.pause();
-                                    celebrateSound.currentTime = 0;
+                                    celebration.style.display = 'none'; // 简单隐藏庆祝界面
                                 }, 3000);
                             }, 2000);
                         } else if (currentLevel === 1 && currentSubLevel === 3) {
