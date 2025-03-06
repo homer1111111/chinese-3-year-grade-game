@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>三年级中文游戏</title>
+    <meta charset="UTF-8">
+    <!-- 可选：添加 favicon -->
+    <link rel="icon" href="/chinese-3-year-grade-game/favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div id="mode-selection">
@@ -19,6 +22,10 @@
             <div id="flashcard-pinyin"></div>
             <div id="flashcard-meaning"></div>
         </div>
+        <button onclick="nextPracticeWord()">下一个</button>
+        <button onclick="flipCard()">翻转字卡</button>
+        <button onclick="animateStrokeOrder()">播放笔顺</button>
+        <button onclick="exitPracticeMode()">退出</button>
     </div>
     <div id="game-mode" style="display: none;">
         <div id="level"></div>
@@ -39,10 +46,17 @@
             <span id="final-score"></span>
             <span id="final-highest-score"></span>
         </div>
+        <button onclick="saveGame()">保存</button>
+        <button onclick="loadGame()">加载</button>
+        <button onclick="startOver()">重玩</button>
+        <button onclick="tryAgain()">再试</button>
+        <button onclick="done()">完成</button>
+        <button onclick="exitGameMode()">退出</button>
     </div>
     <div id="highest-score"></div>
     <audio id="celebrate-sound" src="path/to/sound.mp3"></audio>
 
+    <!-- 确保脚本只加载一次 -->
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
     <script src="/chinese-3-year-grade-game/script.js"></script>
 </body>
