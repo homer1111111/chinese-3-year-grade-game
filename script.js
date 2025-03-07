@@ -46,9 +46,6 @@ const singleAnimationFallback = document.getElementById('single-animation-fallba
 const singleAnimation = document.getElementById('single-animation');
 const articleMode = document.getElementById('article-mode');
 const articleContent = document.getElementById('article-content');
-const articleHanzi = document.getElementById('article-hanzi');
-const articlePinyin = document.getElementById('article-pinyin');
-const articleMeaning = document.getElementById('article-meaning');
 const celebrateSound = document.getElementById('celebrate-sound');
 
 // 初始化显示历史最高分数
@@ -133,11 +130,144 @@ function shuffle(array) {
     return array;
 }
 
+// 课文模式
+function startArticleMode() {
+    modeSelection.style.display = 'flex'; // 确保初始样式正确
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'block';
+    showArticleContent();
+}
+
+function showArticleContent() {
+    let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
+    
+    // 在“树皮草”之间插入“、”
+    text = text.replace("树皮草", "树皮、草");
+    
+    // 定义所有汉字的拼音映射
+    const pinyinMap = {
+        '古': 'gǔ', '代': 'dài', '没': 'méi', '有': 'yǒu', '纸': 'zhǐ', '人': 'rén', '们': 'men', '常': 'cháng', '把': 'bǎ', '字': 'zì', 
+        '写': 'xiě', '在': 'zài', '竹': 'zhú', '片': 'piàn', '上': 'shàng', '很': 'hěn', '不': 'bù', '便': 'biàn', '公': 'gōng', '元': 'yuán', 
+        '一': 'yī', '〇': 'líng', '五': 'wǔ', '年': 'nián', '中': 'zhōng', '国': 'guó', '个': 'gè', '叫': 'jiào', '蔡': 'cài', '伦': 'lún', 
+        '决': 'jué', '心': 'xīn', '造': 'zào', '出': 'chū', '种': 'zhǒng', '又': 'yòu', '好': 'hǎo', '方': 'fāng', '便': 'biàn', '的': 'de', 
+        '东': 'dōng', '西': 'xī', '给': 'gěi', '他': 'tā', '做': 'zuò', '了': 'le', '多': 'duō', '试': 'shì', '验': 'yàn', '树': 'shù', 
+        '皮': 'pí', '草': 'cǎo', '和': 'hé', '破': 'pò', '布': 'bù', '泡': 'pào', '水': 'shuǐ', '里': 'lǐ', '打': 'dǎ', '成': 'chéng', 
+        '浆': 'jiāng', '再': 'zài', '铺': 'pù', '帘': 'lián', '干': 'gān', '以': 'yǐ', '后': 'hòu', '拿': 'ná', '下': 'xià', '来': 'lái', 
+        '就': 'jiù', '是': 'shì', '发': 'fā', '明': 'míng', '术': 'shù', '四': 'sì', '大': 'dà', '之': 'zhī'
+    };
+
+    // 判断是否为汉字（排除标点符号和数字）
+    const isChineseChar = char => /[\u4E00-\u9FFF]/.test(char);
+
+    // 将文本分割成字符数组
+    const chars = text.split('');
+    let result = '';
+    let lineCount = 0;
+
+    // 大屏幕每行17个字符，小屏幕无限制
+    for (let i = 0; i < chars.length; i++) {
+        const char = chars[i];
+        if (isChineseChar(char)) {
+            const pinyin = pinyinMap[char] || '未知 (unknown)';
+            result += `<span class="word-wrapper"><span class="word-item"><span class="pinyin">${pinyin}</span><span class="hanzi">${char}</span></span></span>`;
+        } else {
+            result += `<span class="word-wrapper"><span class="non-hanzi">${char}</span></span>`;
+        }
+        if (window.innerWidth > 600) { // 仅大屏幕限制17字
+            lineCount++;
+            if (lineCount === 17 && i < chars.length - 1) {
+                result += '<br>'; // 每17个字符换行
+                lineCount = 0;
+            }
+        }
+    }
+
+    articleContent.innerHTML = result;
+}
+
+function exitArticleMode() {
+    articleMode.style.display = 'none';
+    modeSelection.style.display = 'flex'; // 强制重置为flex布局
+    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+}
+
+// 单字模式
+function startSingleWordMode() {
+    modeSelection.style.display = 'flex';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    singleWordMode.style.display = 'block';
+    showSingleWordList();
+}
+
+function showSingleWordList() {
+    singleWordList.innerHTML = allUniqueWords.map(word => `
+        <div class="word-item" data-hanzi="${word.hanzi}">
+            <span class="pinyin">${word.pinyin}</span>
+            <span class="hanzi">${word.hanzi}</span>
+        </div>
+    `).join('');
+
+    singleHanzi.textContent = '';
+    singlePinyin.textContent = '';
+    singleMeaning.textContent = '';
+    singleStrokes.textContent = '';
+    singleAnimationGif.style.display = 'none';
+    singleAnimationFallback.style.display = 'none';
+
+    const wordItems = singleWordList.querySelectorAll('.word-item');
+    wordItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const hanzi = item.getAttribute('data-hanzi');
+            const word = allUniqueWords.find(w => w.hanzi === hanzi);
+            if (word) {
+                wordItems.forEach(i => i.classList.remove('highlight'));
+                item.classList.add('highlight');
+
+                singleHanzi.textContent = word.hanzi;
+                singlePinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
+                singleMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
+                singleStrokes.textContent = `笔画数: ${word.strokeCount} (Stroke Count: ${word.strokeCount})`;
+                singleAnimationGif.src = word.animation;
+                singleAnimationGif.style.display = 'block';
+                singleAnimationFallback.style.display = 'none';
+
+                if (singleHanziWriter) {
+                    singleHanziWriter.setCharacter(word.hanzi);
+                } else {
+                    singleHanziWriter = HanziWriter.create('single-animation', word.hanzi, {
+                        width: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
+                        height: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
+                        padding: 5,
+                        showOutline: true,
+                        strokeAnimationSpeed: 1,
+                        strokeHighlightSpeed: 0.5,
+                        highlightColor: '#FF0000'
+                    });
+                }
+            }
+        });
+    });
+}
+
+function animateSingleStrokeOrder() {
+    if (singleHanziWriter) singleHanziWriter.animateCharacter();
+}
+
+function exitSingleWordMode() {
+    singleWordMode.style.display = 'none';
+    modeSelection.style.display = 'flex'; // 强制重置为flex布局
+    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+}
+
 // 练习模式
 function startPracticeMode() {
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
-    modeSelection.style.display = 'none';
+    modeSelection.style.display = 'flex';
     gameMode.style.display = 'none';
     singleWordMode.style.display = 'none';
     articleMode.style.display = 'none';
@@ -170,12 +300,13 @@ function nextPracticeWord() {
 
 function exitPracticeMode() {
     practiceMode.style.display = 'none';
-    modeSelection.style.display = 'block';
+    modeSelection.style.display = 'flex'; // 强制重置为flex布局
+    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
 }
 
 // 游戏模式
 function startGameMode() {
-    modeSelection.style.display = 'none';
+    modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
     articleMode.style.display = 'none';
@@ -185,7 +316,8 @@ function startGameMode() {
 
 function exitGameMode() {
     gameMode.style.display = 'none';
-    modeSelection.style.display = 'block';
+    modeSelection.style.display = 'flex'; // 强制重置为flex布局
+    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
 }
 
 function updateScoreDisplay() {
@@ -433,143 +565,4 @@ function handleLevelComplete() {
         levelScoreDisplay.textContent = `本关得分: ${score} (Sub-Level Score: ${score})`;
         setTimeout(() => setLevel(nextLevel, nextSubLevel), 2000);
     }
-}
-
-// 单字模式
-function startSingleWordMode() {
-    modeSelection.style.display = 'none';
-    practiceMode.style.display = 'none';
-    gameMode.style.display = 'none';
-    articleMode.style.display = 'none';
-    singleWordMode.style.display = 'block';
-    showSingleWordList();
-}
-
-function showSingleWordList() {
-    singleWordList.innerHTML = allUniqueWords.map(word => `
-        <div class="word-item" data-hanzi="${word.hanzi}">
-            <span class="pinyin">${word.pinyin}</span>
-            <span class="hanzi">${word.hanzi}</span>
-        </div>
-    `).join('');
-
-    singleHanzi.textContent = '';
-    singlePinyin.textContent = '';
-    singleMeaning.textContent = '';
-    singleStrokes.textContent = '';
-    singleAnimationGif.style.display = 'none';
-    singleAnimationFallback.style.display = 'none';
-
-    const wordItems = singleWordList.querySelectorAll('.word-item');
-    wordItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const hanzi = item.getAttribute('data-hanzi');
-            const word = allUniqueWords.find(w => w.hanzi === hanzi);
-            if (word) {
-                wordItems.forEach(i => i.classList.remove('highlight'));
-                item.classList.add('highlight');
-
-                singleHanzi.textContent = word.hanzi;
-                singlePinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
-                singleMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
-                singleStrokes.textContent = `笔画数: ${word.strokeCount} (Stroke Count: ${word.strokeCount})`;
-                singleAnimationGif.src = word.animation;
-                singleAnimationGif.style.display = 'block';
-                singleAnimationFallback.style.display = 'none';
-
-                if (singleHanziWriter) {
-                    singleHanziWriter.setCharacter(word.hanzi);
-                } else {
-                    singleHanziWriter = HanziWriter.create('single-animation', word.hanzi, {
-                        width: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
-                        height: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
-                        padding: 5,
-                        showOutline: true,
-                        strokeAnimationSpeed: 1,
-                        strokeHighlightSpeed: 0.5,
-                        highlightColor: '#FF0000'
-                    });
-                }
-            }
-        });
-    });
-}
-
-function animateSingleStrokeOrder() {
-    if (singleHanziWriter) singleHanziWriter.animateCharacter();
-}
-
-function exitSingleWordMode() {
-    singleWordMode.style.display = 'none';
-    modeSelection.style.display = 'block';
-}
-
-// 课文模式
-function startArticleMode() {
-    modeSelection.style.display = 'none';
-    practiceMode.style.display = 'none';
-    gameMode.style.display = 'none';
-    singleWordMode.style.display = 'none';
-    articleMode.style.display = 'block';
-    showArticleContent();
-}
-
-function startArticleMode() {
-    modeSelection.style.display = 'none';
-    practiceMode.style.display = 'none';
-    gameMode.style.display = 'none';
-    singleWordMode.style.display = 'none';
-    articleMode.style.display = 'block';
-    showArticleContent();
-}
-
-function showArticleContent() {
-    let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
-    
-    // 在“树皮草”之间插入“、”
-    text = text.replace("树皮草", "树皮、草");
-    
-    // 定义所有汉字的拼音映射
-    const pinyinMap = {
-        '古': 'gǔ', '代': 'dài', '没': 'méi', '有': 'yǒu', '纸': 'zhǐ', '人': 'rén', '们': 'men', '常': 'cháng', '把': 'bǎ', '字': 'zì', 
-        '写': 'xiě', '在': 'zài', '竹': 'zhú', '片': 'piàn', '上': 'shàng', '很': 'hěn', '不': 'bù', '便': 'biàn', '公': 'gōng', '元': 'yuán', 
-        '一': 'yī', '〇': 'líng', '五': 'wǔ', '年': 'nián', '中': 'zhōng', '国': 'guó', '个': 'gè', '叫': 'jiào', '蔡': 'cài', '伦': 'lún', 
-        '决': 'jué', '心': 'xīn', '造': 'zào', '出': 'chū', '种': 'zhǒng', '又': 'yòu', '好': 'hǎo', '方': 'fāng', '便': 'biàn', '的': 'de', 
-        '东': 'dōng', '西': 'xī', '给': 'gěi', '他': 'tā', '做': 'zuò', '了': 'le', '多': 'duō', '试': 'shì', '验': 'yàn', '树': 'shù', 
-        '皮': 'pí', '草': 'cǎo', '和': 'hé', '破': 'pò', '布': 'bù', '泡': 'pào', '水': 'shuǐ', '里': 'lǐ', '打': 'dǎ', '成': 'chéng', 
-        '浆': 'jiāng', '再': 'zài', '铺': 'pù', '帘': 'lián', '干': 'gān', '以': 'yǐ', '后': 'hòu', '拿': 'ná', '下': 'xià', '来': 'lái', 
-        '就': 'jiù', '是': 'shì', '发': 'fā', '明': 'míng', '术': 'shù', '四': 'sì', '大': 'dà', '之': 'zhī'
-    };
-
-    // 判断是否为汉字（排除标点符号和数字）
-    const isChineseChar = char => /[\u4E00-\u9FFF]/.test(char);
-
-    // 将文本分割成字符数组
-    const chars = text.split('');
-    let result = '';
-    let lineCount = 0;
-
-    // 遍历字符，每17个字符换行
-    for (let i = 0; i < chars.length; i++) {
-        const char = chars[i];
-        if (isChineseChar(char)) {
-            const pinyin = pinyinMap[char] || '未知 (unknown)';
-            result += `<span class="word-wrapper"><span class="word-item"><span class="pinyin">${pinyin}</span><span class="hanzi">${char}</span></span></span>`;
-        } else {
-            result += `<span class="word-wrapper"><span class="non-hanzi">${char}</span></span>`;
-        }
-        lineCount++;
-        if (lineCount === 17 && i < chars.length - 1) {
-            result += '<br>'; // 每17个字符换行
-            lineCount = 0;
-        }
-    }
-
-    articleContent.innerHTML = result;
-}
-
-
-function exitArticleMode() {
-    articleMode.style.display = 'none';
-    modeSelection.style.display = 'block';
 }
