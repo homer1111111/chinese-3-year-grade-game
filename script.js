@@ -1,18 +1,17 @@
-let score = 0; // 当前小关分数
-let totalScore = 0; // 累计总分
-let level1Score = 0; // 关卡 1 总分
-let level2Score = 0; // 关卡 2 总分
-let currentLevel = 1; // 当前大关卡
-let currentSubLevel = 1; // 当前小关卡
-let wrongWords = []; // 记录错误汉字
-let level1WrongWords = []; // 专门记录关卡 1 的错误汉字
-let isFixingErrors = false; // 是否在修正关卡 1 错误模式
-let highestScore = parseInt(localStorage.getItem('highestScore')) || 0; // 历史最高分数
-let practiceIndex = 0; // 练习模式当前汉字索引
-let practiceWords = []; // 练习模式汉字列表
-let hanziWriter = null; // HanziWriter 实例
-let currentTab = 'stroke-tab'; // 当前选项卡，默认为“笔画笔顺”
-let isFlipped = false; // 字卡是否翻转
+let score = 0;
+let totalScore = 0;
+let level1Score = 0;
+let level2Score = 0;
+let currentLevel = 1;
+let currentSubLevel = 1;
+let wrongWords = [];
+let level1WrongWords = [];
+let isFixingErrors = false;
+let highestScore = parseInt(localStorage.getItem('highestScore')) || 0;
+let practiceIndex = 0;
+let practiceWords = [];
+let singleHanziWriter = null;
+let isFlipped = false;
 
 const modeSelection = document.getElementById('mode-selection');
 const currentScoreDisplay = document.getElementById('current-score');
@@ -32,24 +31,30 @@ const finalHighestScoreDisplay = document.getElementById('final-highest-score');
 const highestScoreDisplay = document.getElementById('highest-score');
 const practiceMode = document.getElementById('practice-mode');
 const gameMode = document.getElementById('game-mode');
-const practiceHanzi = document.getElementById('practice-hanzi');
-const practiceStrokes = document.getElementById('practice-strokes');
-const practiceAnimationGif = document.getElementById('practice-animation-gif');
-const animationFallback = document.getElementById('animation-fallback');
-const practiceAnimation = document.getElementById('practice-animation');
-const celebrateSound = document.getElementById('celebrate-sound');
-const controls = document.getElementById('controls');
-const highestScoreDiv = document.getElementById('highest-score');
-const scoreDiv = document.getElementById('score');
 const flashcard = document.querySelector('.flashcard');
 const flashcardHanzi = document.getElementById('flashcard-hanzi');
 const flashcardPinyin = document.getElementById('flashcard-pinyin');
 const flashcardMeaning = document.getElementById('flashcard-meaning');
+const singleWordMode = document.getElementById('single-word-mode');
+const singleWordList = document.getElementById('single-word-list');
+const singleHanzi = document.getElementById('single-hanzi');
+const singlePinyin = document.getElementById('single-pinyin');
+const singleMeaning = document.getElementById('single-meaning');
+const singleStrokes = document.getElementById('single-strokes');
+const singleAnimationGif = document.getElementById('single-animation-gif');
+const singleAnimationFallback = document.getElementById('single-animation-fallback');
+const singleAnimation = document.getElementById('single-animation');
+const articleMode = document.getElementById('article-mode');
+const articleContent = document.getElementById('article-content');
+const articleHanzi = document.getElementById('article-hanzi');
+const articlePinyin = document.getElementById('article-pinyin');
+const articleMeaning = document.getElementById('article-meaning');
+const celebrateSound = document.getElementById('celebrate-sound');
 
 // 初始化显示历史最高分数
 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
-// 汉字和拼画数据（按小关分配）
+// 汉字和拼音数据
 const allWords = {
     'level-1-1': [
         { hanzi: '造', pinyin: 'zào', meaningCn: '制造', meaningEn: 'to make, to build', strokeCount: 12, animation: 'https://bishun.gjcha.com/9020.gif' },
@@ -101,7 +106,6 @@ const allWords = {
     ]
 };
 
-// 练习模式的所有汉字列表（去重）
 const allUniqueWords = [
     { hanzi: '造', pinyin: 'zào', meaningCn: '制造', meaningEn: 'to make, to build', strokeCount: 12, animation: 'https://bishun.gjcha.com/9020.gif' },
     { hanzi: '纸', pinyin: 'zhǐ', meaningCn: '纸张', meaningEn: 'paper', strokeCount: 7, animation: 'https://bishun.gjcha.com/7EB8.gif' },
@@ -129,62 +133,20 @@ function shuffle(array) {
     return array;
 }
 
-// 进入练习模式
+// 练习模式
 function startPracticeMode() {
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'none';
     gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'none';
     practiceMode.style.display = 'block';
-    currentTab = 'stroke-tab'; // 默认显示“笔画笔顺”选项卡
-    showTab(currentTab);
     showPracticeWord();
 }
 
-// 进入游戏模式
-function startGameMode() {
-    modeSelection.style.display = 'none';
-    practiceMode.style.display = 'none';
-    gameMode.style.display = 'block';
-    setLevel(currentLevel, currentSubLevel);
-}
-
-// 退出游戏模式
-function exitGameMode() {
-    gameMode.style.display = 'none';
-    practiceMode.style.display = 'none';
-    modeSelection.style.display = 'block';
-}
-
-// 显示当前练习汉字
 function showPracticeWord() {
     const word = practiceWords[practiceIndex];
-    
-    // 笔画笔顺选项卡内容
-    practiceHanzi.textContent = word.hanzi;
-    practiceStrokes.textContent = `笔画数: ${word.strokeCount} (Stroke Count: ${word.strokeCount})`;
-
-    // 尝试加载 GIF 动画
-    practiceAnimationGif.src = word.animation;
-    practiceAnimationGif.style.display = 'block';
-    animationFallback.style.display = 'none';
-
-    // 初始化 Hanzi Writer（备用方案）
-    if (hanziWriter) {
-        hanziWriter.setCharacter(word.hanzi);
-    } else {
-        hanziWriter = HanziWriter.create('practice-animation', word.hanzi, {
-            width: 150,
-            height: 150,
-            padding: 5,
-            showOutline: true,
-            strokeAnimationSpeed: 1,
-            strokeHighlightSpeed: 0.5,
-            highlightColor: '#FF0000'
-        });
-    }
-
-    // 字卡选项卡内容
     flashcardHanzi.textContent = word.hanzi;
     flashcardPinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
     flashcardMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
@@ -192,44 +154,11 @@ function showPracticeWord() {
     flashcard.classList.remove('flipped');
 }
 
-// 切换选项卡
-function showTab(tabId) {
-    currentTab = tabId;
-    const tabs = document.querySelectorAll('.tab-content');
-    const tabButtons = document.querySelectorAll('.tabs button');
-    
-    tabs.forEach(tab => {
-        tab.style.display = 'none';
-    });
-    tabButtons.forEach(button => {
-        button.classList.remove('active');
-    });
-
-    document.getElementById(tabId).style.display = 'block';
-    const activeButton = Array.from(tabButtons).find(button => button.onclick.toString().includes(tabId));
-    if (activeButton) {
-        activeButton.classList.add('active');
-    }
-}
-
-// 翻转字卡
 function flipCard() {
     isFlipped = !isFlipped;
-    if (isFlipped) {
-        flashcard.classList.add('flipped');
-    } else {
-        flashcard.classList.remove('flipped');
-    }
+    flashcard.classList.toggle('flipped', isFlipped);
 }
 
-// 播放笔顺动画（Hanzi Writer）
-function animateStrokeOrder() {
-    if (hanziWriter) {
-        hanziWriter.animateCharacter();
-    }
-}
-
-// 下一个练习汉字
 function nextPracticeWord() {
     practiceIndex++;
     if (practiceIndex < practiceWords.length) {
@@ -239,37 +168,37 @@ function nextPracticeWord() {
     }
 }
 
-// 退出练习模式
 function exitPracticeMode() {
     practiceMode.style.display = 'none';
+    modeSelection.style.display = 'block';
+}
+
+// 游戏模式
+function startGameMode() {
+    modeSelection.style.display = 'none';
+    practiceMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    gameMode.style.display = 'block';
+    setLevel(currentLevel, currentSubLevel);
+}
+
+function exitGameMode() {
     gameMode.style.display = 'none';
     modeSelection.style.display = 'block';
 }
 
-// 更新分数显示
 function updateScoreDisplay() {
     currentScoreDisplay.textContent = `当前关卡分数: ${score} (Current Level Score: ${score})`;
     totalScoreDisplay.textContent = `累计分数: ${totalScore} (Total Score: ${totalScore})`;
 }
 
-// 保存游戏进度
 function saveGame() {
-    const gameState = {
-        score: score,
-        totalScore: totalScore,
-        level1Score: level1Score,
-        level2Score: level2Score,
-        currentLevel: currentLevel,
-        currentSubLevel: currentSubLevel,
-        wrongWords: wrongWords,
-        level1WrongWords: level1WrongWords,
-        isFixingErrors: isFixingErrors
-    };
+    const gameState = { score, totalScore, level1Score, level2Score, currentLevel, currentSubLevel, wrongWords, level1WrongWords, isFixingErrors };
     localStorage.setItem('chineseGameState', JSON.stringify(gameState));
     alert('游戏进度已保存！(Game Progress Saved!)');
 }
 
-// 加载游戏进度
 function loadGame() {
     const savedState = localStorage.getItem('chineseGameState');
     if (savedState) {
@@ -283,19 +212,14 @@ function loadGame() {
         wrongWords = gameState.wrongWords;
         level1WrongWords = gameState.level1WrongWords;
         isFixingErrors = gameState.isFixingErrors;
-
-        if (isFixingErrors) {
-            fixLevel1Errors();
-        } else {
-            setLevel(currentLevel, currentSubLevel);
-        }
+        if (isFixingErrors) fixLevel1Errors();
+        else setLevel(currentLevel, currentSubLevel);
         updateScoreDisplay();
     } else {
         alert('没有找到保存的进度！(No Saved Progress Found!)');
     }
 }
 
-// 重新开始游戏
 function startOver() {
     localStorage.removeItem('chineseGameState');
     score = 0;
@@ -310,18 +234,15 @@ function startOver() {
     setLevel(1, 1);
 }
 
-// Try Again 功能：刷新页面
 function tryAgain() {
     localStorage.removeItem('chineseGameState');
     location.reload();
 }
 
-// Done 功能：关闭网页
 function done() {
     window.close();
 }
 
-// 修正关卡 1 的错误汉字
 function fixLevel1Errors() {
     isFixingErrors = true;
     levelDisplay.textContent = `关卡 1 错误整理 (Level 1 Error Correction)`;
@@ -331,59 +252,35 @@ function fixLevel1Errors() {
     level1Errors.style.display = 'block';
     celebration.style.display = 'none';
     levelTotal.style.display = 'none';
-
-    // 显示错误汉字列表
     wrongWordsList.textContent = level1WrongWords.map(word => word.hanzi).join(' ');
-
-    // 清空容器
     hanziContainer.innerHTML = '';
     pinyinContainer.innerHTML = '';
-
-    // 生成错误汉字卡片和拼音区域
     const shuffledWords = shuffle([...level1WrongWords]);
     shuffledWords.forEach(word => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.draggable = true;
         card.setAttribute('data-hanzi', word.hanzi);
         card.textContent = word.hanzi;
         hanziContainer.appendChild(card);
-
         const zone = document.createElement('div');
         zone.className = 'drop-zone';
         zone.setAttribute('data-pinyin', word.pinyin);
         zone.textContent = word.pinyin;
         pinyinContainer.appendChild(zone);
     });
-
-    // 打乱显示顺序
-    const hanziCards = Array.from(hanziContainer.children);
-    const pinyinZones = Array.from(pinyinContainer.children);
-    shuffle(hanziCards);
-    shuffle(pinyinZones);
-    hanziCards.forEach(card => hanziContainer.appendChild(card));
-    pinyinZones.forEach(zone => pinyinContainer.appendChild(zone));
-
-    // 绑定拖放事件
-    bindDragAndDrop();
+    bindTapEvents();
 }
 
-// 设置关卡
 function setLevel(level, subLevel) {
     currentLevel = level;
     currentSubLevel = subLevel;
-    if (currentLevel === 3) {
-        levelDisplay.textContent = `关卡 3：蔡伦造纸 ${currentSubLevel}/3 (Level 3: Cai Lun Invented the Paper ${currentSubLevel}/3)`;
-    } else {
-        levelDisplay.textContent = `当前关卡: ${currentLevel}-${currentSubLevel} (Current Level: ${currentLevel}-${currentSubLevel})`;
-    }
-    let words = allWords[`level-${level}-${subLevel}`];
+    levelDisplay.textContent = currentLevel === 3 ? 
+        `关卡 3：蔡伦造纸 ${currentSubLevel}/3 (Level 3: Cai Lun Invented the Paper ${currentSubLevel}/3)` : 
+        `当前关卡: ${currentLevel}-${currentSubLevel} (Current Level: ${currentLevel}-${currentSubLevel})`;
     
-    // 添加上一小关的错误汉字
-    if (wrongWords.length > 0) {
-        words = [...words, ...wrongWords];
-    }
-    wrongWords = []; // 重置错误汉字，准备记录当前小关的错误
+    let words = allWords[`level-${level}-${subLevel}`];
+    if (wrongWords.length > 0) words = [...words, ...wrongWords];
+    wrongWords = [];
 
     isFixingErrors = false;
     score = 0;
@@ -393,16 +290,13 @@ function setLevel(level, subLevel) {
     celebration.style.display = 'none';
     levelTotal.style.display = 'none';
 
-    // 清空容器
     hanziContainer.innerHTML = '';
     pinyinContainer.innerHTML = '';
 
-    // 生成汉字卡片和拼音区域
     const shuffledWords = shuffle([...words]);
     shuffledWords.forEach(word => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.draggable = true;
         card.setAttribute('data-hanzi', word.hanzi);
         card.textContent = word.hanzi;
         hanziContainer.appendChild(card);
@@ -414,177 +308,268 @@ function setLevel(level, subLevel) {
         pinyinContainer.appendChild(zone);
     });
 
-    // 打乱显示顺序
-    const hanziCards = Array.from(hanziContainer.children);
-    const pinyinZones = Array.from(pinyinContainer.children);
-    shuffle(hanziCards);
-    shuffle(pinyinZones);
-    hanziCards.forEach(card => hanziContainer.appendChild(card));
-    pinyinZones.forEach(zone => pinyinContainer.appendChild(zone));
-
-    // 绑定拖放事件
-    bindDragAndDrop();
+    bindTapEvents();
 }
 
-// 拖放逻辑
-function bindDragAndDrop() {
+function bindTapEvents() {
     const cards = document.querySelectorAll('.card');
     const dropZones = document.querySelectorAll('.drop-zone');
+    let selectedCard = null;
 
     cards.forEach(card => {
-        card.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text', card.getAttribute('data-hanzi'));
+        card.addEventListener('click', () => {
+            if (selectedCard) selectedCard.classList.remove('selected');
+            selectedCard = card;
+            card.classList.add('selected');
         });
     });
 
     dropZones.forEach(zone => {
-        zone.addEventListener('dragover', (e) => e.preventDefault());
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const hanzi = e.dataTransfer.getData('text');
+        zone.addEventListener('click', () => {
+            if (!selectedCard) return;
+
+            const hanzi = selectedCard.getAttribute('data-hanzi');
             const pinyin = zone.getAttribute('data-pinyin');
             const correctMatch = {};
-            // 使用关卡3-3的数据作为匹配基准
-            allWords['level-3-3'].forEach(word => {
-                correctMatch[word.hanzi] = word.pinyin;
-            });
-            allWords['level-3-1'].forEach(word => {
-                correctMatch[word.hanzi] = word.pinyin;
-            });
-            allWords['level-3-2'].forEach(word => {
-                correctMatch[word.hanzi] = word.pinyin;
-            });
+            allWords['level-3-3'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
+            allWords['level-3-1'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
+            allWords['level-3-2'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
 
             if (correctMatch[hanzi] === pinyin) {
                 score += 10;
                 zone.classList.add('correct');
                 zone.textContent = `${hanzi} - ${pinyin}`;
-                document.querySelector(`[data-hanzi="${hanzi}"]`).style.display = 'none';
+                selectedCard.style.display = 'none';
+                selectedCard = null;
 
-                // 检查是否全部匹配完成
-                const remainingCards = Array.from(cards).filter(card => card.style.display !== 'none');
+                const remainingCards = Array.from(cards).filter(c => c.style.display !== 'none');
                 if (remainingCards.length === 0) {
-                    if (!isFixingErrors) {
-                        totalScore += score; // 仅在非修正模式下累加总分
-                        if (currentLevel === 1) {
-                            level1Score += score; // 累加关卡 1 总分
-                        } else if (currentLevel === 2) {
-                            level2Score += score; // 累加关卡 2 总分
-                        }
-                    }
-
-                    saveGame(); // 每次小关完成时自动保存
-
-                    if (isFixingErrors) {
-                        // 修正模式完成，进入关卡 2
-                        wrongWords = [];
-                        level1WrongWords = [];
-                        score = totalScore; // 恢复总分到关卡 2
-                        updateScoreDisplay();
-                        levelTotal.style.display = 'block';
-                        levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-                        setTimeout(() => {
-                            setLevel(2, 1);
-                        }, 2000);
-                    } else if (currentLevel === 3 && currentSubLevel === 3) {
-                        // 最后一小关完成，显示庆祝和最终分数
-                        levelTotal.style.display = 'block';
-                        levelTotalScoreDisplay.textContent = `关卡 3 总分: ${totalScore} (Level 3 Total Score: ${totalScore})`;
-                        setTimeout(() => {
-                            celebration.style.display = 'block';
-                            levelTotal.style.display = 'none';
-                            finalScoreDisplay.textContent = `最终分数: ${totalScore} (Final Score: ${totalScore})`;
-                            // 更新历史最高分数
-                            if (totalScore > highestScore) {
-                                highestScore = totalScore;
-                                localStorage.setItem('highestScore', highestScore);
-                                highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-                            }
-                            finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-                            celebrateSound.play();
-                            // 3秒后停止音效
-                            setTimeout(() => {
-                                celebrateSound.pause();
-                                celebrateSound.currentTime = 0; // 重置音效到开头
-                            }, 3000);
-                        }, 2000);
-                    } else if (currentLevel === 1 && currentSubLevel === 3) {
-                        // 关卡 1-3 完成，整理错误汉字
-                        if (level1WrongWords.length > 0) {
-                            fixLevel1Errors();
-                        } else {
-                            // 没有错误，直接进入关卡 2
-                            wrongWords = [];
-                            level1WrongWords = [];
-                            score = totalScore; // 关卡 1 总分传递到关卡 2
-                            updateScoreDisplay();
-                            levelTotal.style.display = 'block';
-                            levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-                            setTimeout(() => {
-                                setLevel(2, 1);
-                            }, 2000);
-                        }
-                    } else if (currentLevel === 2 && currentSubLevel === 3) {
-                        // 关卡 2-3 完成，直接进入关卡 3
-                        wrongWords = [];
-                        score = totalScore; // 关卡 2 总分传递到关卡 3
-                        updateScoreDisplay();
-                        levelTotal.style.display = 'block';
-                        levelTotalScoreDisplay.textContent = `关卡 2 总分: ${totalScore} (Level 2 Total Score: ${totalScore})`;
-                        setTimeout(() => {
-                            setLevel(3, 1);
-                        }, 2000);
-                    } else {
-                        // 进入下一小关
-                        let nextLevel = currentLevel;
-                        let nextSubLevel = currentSubLevel + 1;
-                        if (nextSubLevel > 3) {
-                            nextLevel++;
-                            nextSubLevel = 1;
-                            wrongWords = []; // 大关卡切换时清空错误汉字
-                            if (nextLevel === 2) {
-                                score = totalScore; // 关卡 1 总分传递到关卡 2
-                                updateScoreDisplay();
-                                levelTotal.style.display = 'block';
-                                levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-                                setTimeout(() => {
-                                    setLevel(nextLevel, nextSubLevel);
-                                }, 2000);
-                                return;
-                            } else if (nextLevel === 3) {
-                                score = totalScore; // 关卡 2 总分传递到关卡 3
-                                updateScoreDisplay();
-                                levelTotal.style.display = 'block';
-                                levelTotalScoreDisplay.textContent = `关卡 2 总分: ${totalScore} (Level 2 Total Score: ${totalScore})`;
-                                setTimeout(() => {
-                                    setLevel(nextLevel, nextSubLevel);
-                                }, 2000);
-                                return;
-                            }
-                        }
-                        // 显示当前小关分数，2秒后进入下一关
-                        levelComplete.style.display = 'block';
-                        levelScoreDisplay.textContent = `本关得分: ${score} (Sub-Level Score: ${score})`;
-                        setTimeout(() => {
-                            setLevel(nextLevel, nextSubLevel);
-                        }, 2000);
-                    }
+                    handleLevelComplete();
                 }
             } else {
                 score -= 5;
                 zone.classList.add('wrong');
                 setTimeout(() => zone.classList.remove('wrong'), 500);
 
-                // 记录错误汉字
-                const wrongWord = Object.values(correctMatch).find(word => word.hanzi === hanzi);
-                if (!wrongWords.some(w => w.hanzi === hanzi)) {
-                    wrongWords.push({ hanzi, pinyin });
-                }
-                if (currentLevel === 1 && !level1WrongWords.some(w => w.hanzi === hanzi)) {
-                    level1WrongWords.push({ hanzi, pinyin });
-                }
+                const wrongWord = { hanzi, pinyin };
+                if (!wrongWords.some(w => w.hanzi === hanzi)) wrongWords.push(wrongWord);
+                if (currentLevel === 1 && !level1WrongWords.some(w => w.hanzi === hanzi)) level1WrongWords.push(wrongWord);
+                selectedCard.classList.remove('selected');
+                selectedCard = null;
             }
             updateScoreDisplay();
         });
     });
+}
+
+function handleLevelComplete() {
+    if (!isFixingErrors) {
+        totalScore += score;
+        if (currentLevel === 1) level1Score += score;
+        else if (currentLevel === 2) level2Score += score;
+    }
+    saveGame();
+
+    if (isFixingErrors) {
+        wrongWords = [];
+        level1WrongWords = [];
+        score = totalScore;
+        updateScoreDisplay();
+        levelTotal.style.display = 'block';
+        levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
+        setTimeout(() => setLevel(2, 1), 2000);
+    } else if (currentLevel === 3 && currentSubLevel === 3) {
+        levelTotal.style.display = 'block';
+        levelTotalScoreDisplay.textContent = `关卡 3 总分: ${totalScore} (Level 3 Total Score: ${totalScore})`;
+        setTimeout(() => {
+            celebration.style.display = 'block';
+            levelTotal.style.display = 'none';
+            finalScoreDisplay.textContent = `最终分数: ${totalScore} (Final Score: ${totalScore})`;
+            if (totalScore > highestScore) {
+                highestScore = totalScore;
+                localStorage.setItem('highestScore', highestScore);
+                highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
+            }
+            finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
+            celebrateSound.play();
+            setTimeout(() => { celebrateSound.pause(); celebrateSound.currentTime = 0; }, 3000);
+        }, 2000);
+    } else if (currentLevel === 1 && currentSubLevel === 3) {
+        if (level1WrongWords.length > 0) {
+            fixLevel1Errors();
+        } else {
+            wrongWords = [];
+            level1WrongWords = [];
+            score = totalScore;
+            updateScoreDisplay();
+            levelTotal.style.display = 'block';
+            levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
+            setTimeout(() => setLevel(2, 1), 2000);
+        }
+    } else if (currentLevel === 2 && currentSubLevel === 3) {
+        wrongWords = [];
+        score = totalScore;
+        updateScoreDisplay();
+        levelTotal.style.display = 'block';
+        levelTotalScoreDisplay.textContent = `关卡 2 总分: ${totalScore} (Level 2 Total Score: ${totalScore})`;
+        setTimeout(() => setLevel(3, 1), 2000);
+    } else {
+        let nextLevel = currentLevel;
+        let nextSubLevel = currentSubLevel + 1;
+        if (nextSubLevel > 3) {
+            nextLevel++;
+            nextSubLevel = 1;
+            wrongWords = [];
+            if (nextLevel === 2 || nextLevel === 3) {
+                score = totalScore;
+                updateScoreDisplay();
+                levelTotal.style.display = 'block';
+                levelTotalScoreDisplay.textContent = `关卡 ${nextLevel - 1} 总分: ${nextLevel === 2 ? level1Score : totalScore} (Level ${nextLevel - 1} Total Score: ${nextLevel === 2 ? level1Score : totalScore})`;
+                setTimeout(() => setLevel(nextLevel, nextSubLevel), 2000);
+                return;
+            }
+        }
+        levelComplete.style.display = 'block';
+        levelScoreDisplay.textContent = `本关得分: ${score} (Sub-Level Score: ${score})`;
+        setTimeout(() => setLevel(nextLevel, nextSubLevel), 2000);
+    }
+}
+
+// 单字模式
+function startSingleWordMode() {
+    modeSelection.style.display = 'none';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    singleWordMode.style.display = 'block';
+    showSingleWordList();
+}
+
+function showSingleWordList() {
+    singleWordList.innerHTML = allUniqueWords.map(word => `
+        <div class="word-item" data-hanzi="${word.hanzi}">
+            <span class="pinyin">${word.pinyin}</span>
+            <span class="hanzi">${word.hanzi}</span>
+        </div>
+    `).join('');
+
+    singleHanzi.textContent = '';
+    singlePinyin.textContent = '';
+    singleMeaning.textContent = '';
+    singleStrokes.textContent = '';
+    singleAnimationGif.style.display = 'none';
+    singleAnimationFallback.style.display = 'none';
+
+    const wordItems = singleWordList.querySelectorAll('.word-item');
+    wordItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const hanzi = item.getAttribute('data-hanzi');
+            const word = allUniqueWords.find(w => w.hanzi === hanzi);
+            if (word) {
+                wordItems.forEach(i => i.classList.remove('highlight'));
+                item.classList.add('highlight');
+
+                singleHanzi.textContent = word.hanzi;
+                singlePinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
+                singleMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
+                singleStrokes.textContent = `笔画数: ${word.strokeCount} (Stroke Count: ${word.strokeCount})`;
+                singleAnimationGif.src = word.animation;
+                singleAnimationGif.style.display = 'block';
+                singleAnimationFallback.style.display = 'none';
+
+                if (singleHanziWriter) {
+                    singleHanziWriter.setCharacter(word.hanzi);
+                } else {
+                    singleHanziWriter = HanziWriter.create('single-animation', word.hanzi, {
+                        width: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
+                        height: window.innerWidth > 600 ? 150 : Math.min(150, window.innerWidth * 0.35),
+                        padding: 5,
+                        showOutline: true,
+                        strokeAnimationSpeed: 1,
+                        strokeHighlightSpeed: 0.5,
+                        highlightColor: '#FF0000'
+                    });
+                }
+            }
+        });
+    });
+}
+
+function animateSingleStrokeOrder() {
+    if (singleHanziWriter) singleHanziWriter.animateCharacter();
+}
+
+function exitSingleWordMode() {
+    singleWordMode.style.display = 'none';
+    modeSelection.style.display = 'block';
+}
+
+// 课文模式
+function startArticleMode() {
+    modeSelection.style.display = 'none';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'block';
+    showArticleContent();
+}
+
+function startArticleMode() {
+    modeSelection.style.display = 'none';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'block';
+    showArticleContent();
+}
+
+function showArticleContent() {
+    let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
+    
+    // 在“树皮草”之间插入“、”
+    text = text.replace("树皮草", "树皮、草");
+    
+    // 定义所有汉字的拼音映射
+    const pinyinMap = {
+        '古': 'gǔ', '代': 'dài', '没': 'méi', '有': 'yǒu', '纸': 'zhǐ', '人': 'rén', '们': 'men', '常': 'cháng', '把': 'bǎ', '字': 'zì', 
+        '写': 'xiě', '在': 'zài', '竹': 'zhú', '片': 'piàn', '上': 'shàng', '很': 'hěn', '不': 'bù', '便': 'biàn', '公': 'gōng', '元': 'yuán', 
+        '一': 'yī', '〇': 'líng', '五': 'wǔ', '年': 'nián', '中': 'zhōng', '国': 'guó', '个': 'gè', '叫': 'jiào', '蔡': 'cài', '伦': 'lún', 
+        '决': 'jué', '心': 'xīn', '造': 'zào', '出': 'chū', '种': 'zhǒng', '又': 'yòu', '好': 'hǎo', '方': 'fāng', '便': 'biàn', '的': 'de', 
+        '东': 'dōng', '西': 'xī', '给': 'gěi', '他': 'tā', '做': 'zuò', '了': 'le', '多': 'duō', '试': 'shì', '验': 'yàn', '树': 'shù', 
+        '皮': 'pí', '草': 'cǎo', '和': 'hé', '破': 'pò', '布': 'bù', '泡': 'pào', '水': 'shuǐ', '里': 'lǐ', '打': 'dǎ', '成': 'chéng', 
+        '浆': 'jiāng', '再': 'zài', '铺': 'pù', '帘': 'lián', '干': 'gān', '以': 'yǐ', '后': 'hòu', '拿': 'ná', '下': 'xià', '来': 'lái', 
+        '就': 'jiù', '是': 'shì', '发': 'fā', '明': 'míng', '术': 'shù', '四': 'sì', '大': 'dà', '之': 'zhī'
+    };
+
+    // 判断是否为汉字（排除标点符号和数字）
+    const isChineseChar = char => /[\u4E00-\u9FFF]/.test(char);
+
+    // 将文本分割成字符数组
+    const chars = text.split('');
+    let result = '';
+    let lineCount = 0;
+
+    // 遍历字符，每17个字符换行
+    for (let i = 0; i < chars.length; i++) {
+        const char = chars[i];
+        if (isChineseChar(char)) {
+            const pinyin = pinyinMap[char] || '未知 (unknown)';
+            result += `<span class="word-wrapper"><span class="word-item"><span class="pinyin">${pinyin}</span><span class="hanzi">${char}</span></span></span>`;
+        } else {
+            result += `<span class="word-wrapper"><span class="non-hanzi">${char}</span></span>`;
+        }
+        lineCount++;
+        if (lineCount === 17 && i < chars.length - 1) {
+            result += '<br>'; // 每17个字符换行
+            lineCount = 0;
+        }
+    }
+
+    articleContent.innerHTML = result;
+}
+
+
+function exitArticleMode() {
+    articleMode.style.display = 'none';
+    modeSelection.style.display = 'block';
 }
