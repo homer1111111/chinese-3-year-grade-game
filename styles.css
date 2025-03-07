@@ -3,10 +3,9 @@ body {
     text-align: center;
     margin: 0;
     padding: 2vh 2vw;
-    overflow-x: hidden; /* 防止水平溢出 */
+    overflow-x: hidden;
 }
 
-/* 默认样式（大屏幕 - 桌面） */
 h1 { font-size: 36px; margin-bottom: 20px; }
 p { font-size: 18px; line-height: 1.5; }
 
@@ -14,22 +13,22 @@ p { font-size: 18px; line-height: 1.5; }
     margin: 30px 0;
     display: flex;
     justify-content: center;
-    gap: 30px; /* 按钮间距增大 */
-    flex-wrap: nowrap; /* 大屏幕不换行 */
+    gap: 30px;
+    flex-wrap: nowrap;
     align-items: center;
 }
 
 #mode-selection button {
-    padding: 15px 25px; /* 按钮内边距增大 */
-    font-size: 22px; /* 按钮字体放大 */
+    padding: 15px 25px;
+    font-size: 22px;
     cursor: pointer;
     background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 5px;
-    min-width: 180px; /* 按钮最小宽度放大 */
+    min-width: 180px;
     touch-action: manipulation;
-    flex: 0 0 auto; /* 防止按钮压缩 */
+    flex: 0 0 auto;
 }
 
 #mode-selection button:hover { background-color: #1976D2; }
@@ -95,10 +94,22 @@ button {
 #level-complete p, #level-total p, #level-1-errors p { font-size: 18px; }
 #wrong-words-list { font-size: 24px; margin: 20px 0; }
 #hanzi-container, #pinyin-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.card, .drop-zone { width: 60px; height: 60px; line-height: 60px; margin: 10px; border: 2px solid #ccc; font-size: 24px; text-align: center; background: #f9f9f9; }
+.card, .drop-zone { 
+    width: 60px; 
+    height: 60px; 
+    line-height: 60px; 
+    margin: 10px; 
+    border: 2px solid #ccc; 
+    font-size: 24px; 
+    text-align: center; 
+    background: #f9f9f9; 
+    transition: background-color 0.3s; 
+}
 .drop-zone { border-style: dashed; border-color: #666; }
-.correct { background: #90ee90; }
-.wrong { background: #ff6347; }
+.card.selected { background-color: #FFB300; } /* 汉字选中为深黄色 */
+.drop-zone.selected { background-color: #616161; } /* 拼音选中为深灰色 */
+.correct { background: #90ee90; } /* 正确时为绿色 */
+.wrong { background: #ff6347; } /* 错误时为红色 */
 #celebration { margin-top: 20px; }
 #celebration h2 { font-size: 28px; }
 #celebration h3 { font-size: 24px; margin: 10px 0; }
@@ -165,25 +176,22 @@ button {
 #article-mode button { background-color: #FF5722; color: white; }
 #article-mode button:hover { background-color: #F4511E; }
 
-/* 中屏幕样式（601px - 1000px） */
 @media (min-width: 601px) and (max-width: 1000px) {
     #mode-selection {
-        flex-wrap: wrap; /* 中屏幕允许换行 */
-        gap: 15px; /* 减小间距 */
-        padding: 0 2vw; /* 添加内边距 */
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 0 2vw;
     }
-    
     #mode-selection button {
-        padding: 10px 20px; /* 减小内边距 */
-        font-size: 18px; /* 减小字体 */
-        min-width: 150px; /* 减小最小宽度 */
-        flex: 1 1 45%; /* 每行两个按钮，弹性布局 */
-        max-width: 48%; /* 限制最大宽度 */
-        box-sizing: border-box; /* 包含内边距 */
+        padding: 10px 20px;
+        font-size: 18px;
+        min-width: 150px;
+        flex: 1 1 45%;
+        max-width: 48%;
+        box-sizing: border-box;
     }
 }
 
-/* 小屏幕（手机）样式 */
 @media (max-width: 600px) {
     h1 { font-size: 6vw; margin-bottom: 2vh; }
     #mode-selection { 
