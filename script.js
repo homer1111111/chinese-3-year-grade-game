@@ -306,7 +306,7 @@ function updateScoreDisplay() {
 function saveGame() {
     const gameState = { score, totalScore, level1Score, level2Score, currentLevel, currentSubLevel, wrongWords, level1WrongWords, isFixingErrors };
     localStorage.setItem('chineseGameState', JSON.stringify(gameState));
-    alert('游戏进度已保存！(Game Progress Saved!)');
+    // 移除 alert，不显示弹窗
 }
 
 function loadGame() {
@@ -406,9 +406,8 @@ function setLevel(level, subLevel) {
     hanziContainer.innerHTML = '';
     pinyinContainer.innerHTML = '';
 
-    // 分别对汉字和拼音进行独立随机排序
-    const shuffledHanzi = shuffle([...words]); // 随机汉字顺序
-    const shuffledPinyin = shuffle([...words]); // 随机拼音顺序
+    const shuffledHanzi = shuffle([...words]);
+    const shuffledPinyin = shuffle([...words]);
 
     shuffledHanzi.forEach(word => {
         const card = document.createElement('div');
@@ -433,18 +432,26 @@ function bindTapEvents() {
     const cards = document.querySelectorAll('.card');
     const dropZones = document.querySelectorAll('.drop-zone');
     let selectedCard = null;
+    let selectedZone = null;
 
     cards.forEach(card => {
         card.addEventListener('click', () => {
             if (selectedCard) selectedCard.classList.remove('selected');
+            if (selectedZone) selectedZone.classList.remove('selected');
             selectedCard = card;
+            selectedZone = null;
             card.classList.add('selected');
         });
     });
 
     dropZones.forEach(zone => {
         zone.addEventListener('click', () => {
-            if (!selectedCard) return;
+            if (!selectedCard) {
+                if (selectedZone) selectedZone.classList.remove('selected');
+                selectedZone = zone;
+                zone.classList.add('selected');
+                return;
+            }
 
             const hanzi = selectedCard.getAttribute('data-hanzi');
             const pinyin = zone.getAttribute('data-pinyin');
@@ -457,14 +464,34 @@ function bindTapEvents() {
 
             if (correctMatch[hanzi] === pinyin) {
                 score += 10;
-                zone.classList.add('correct');
-                zone.textContent = `${hanzi} - ${pinyin}`;
-                selectedCard.style.display = 'none';
-                selectedCard = null;
-
                 const remainingCards = Array.from(cards).filter(c => c.style.display !== 'none');
-                if (remainingCards.length === 0) {
-                    handleLevelComplete();
+
+                if (remainingCards.length === 1) { // 最后一个答案
+                    selectedCard.classList.remove('selected');
+                    selectedCard.classList.add('correct');
+                    zone.classList.remove('selected');
+                    zone.classList.add('correct');
+                    zone.textContent = `${hanzi} - ${pinyin}`;
+                    selectedCard.style.display = 'none';
+                    selectedCard = null;
+
+                    // 延迟 1 秒后保存并处理关卡完成
+                    setTimeout(() => {
+                        saveGame();
+                        handleLevelComplete();
+                    }, 1000);
+                } else {
+                    selectedCard.classList.remove('selected');
+                    selectedCard.classList.add('correct');
+                    zone.classList.remove('selected');
+                    zone.classList.add('correct');
+                    zone.textContent = `${hanzi} - ${pinyin}`;
+                    selectedCard.style.display = 'none';
+                    selectedCard = null;
+
+                    if (remainingCards.length - 1 === 0) {
+                        handleLevelComplete();
+                    }
                 }
             } else {
                 score -= 5;
@@ -488,7 +515,6 @@ function handleLevelComplete() {
         if (currentLevel === 1) level1Score += score;
         else if (currentLevel === 2) level2Score += score;
     }
-    saveGame();
 
     if (isFixingErrors) {
         wrongWords = [];
@@ -497,7 +523,7 @@ function handleLevelComplete() {
         updateScoreDisplay();
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-        setTimeout(() => setLevel(2, 1), 2000);
+        setTimeout(() => setLevel(2, 1), 1000); // 改为 1 秒
     } else if (currentLevel === 3 && currentSubLevel === 3) {
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 3 总分: ${totalScore} (Level 3 Total Score: ${totalScore})`;
@@ -513,7 +539,7 @@ function handleLevelComplete() {
             finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
             celebrateSound.play();
             setTimeout(() => { celebrateSound.pause(); celebrateSound.currentTime = 0; }, 3000);
-        }, 2000);
+        }, 1000); // 改为 1 秒
     } else if (currentLevel === 1 && currentSubLevel === 3) {
         if (level1WrongWords.length > 0) {
             fixLevel1Errors();
@@ -524,7 +550,7 @@ function handleLevelComplete() {
             updateScoreDisplay();
             levelTotal.style.display = 'block';
             levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-            setTimeout(() => setLevel(2, 1), 2000);
+            setTimeout(() => setLevel(2, 1), 1000); // 改为 1 秒
         }
     } else if (currentLevel === 2 && currentSubLevel === 3) {
         wrongWords = [];
@@ -532,7 +558,7 @@ function handleLevelComplete() {
         updateScoreDisplay();
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 2 总分: ${totalScore} (Level 2 Total Score: ${totalScore})`;
-        setTimeout(() => setLevel(3, 1), 2000);
+        setTimeout(() => setLevel(3, 1), 1000); // 改为 1 秒
     } else {
         let nextLevel = currentLevel;
         let nextSubLevel = currentSubLevel + 1;
@@ -545,12 +571,12 @@ function handleLevelComplete() {
                 updateScoreDisplay();
                 levelTotal.style.display = 'block';
                 levelTotalScoreDisplay.textContent = `关卡 ${nextLevel - 1} 总分: ${nextLevel === 2 ? level1Score : totalScore} (Level ${nextLevel - 1} Total Score: ${nextLevel === 2 ? level1Score : totalScore})`;
-                setTimeout(() => setLevel(nextLevel, nextSubLevel), 2000);
+                setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000); // 改为 1 秒
                 return;
             }
         }
         levelComplete.style.display = 'block';
         levelScoreDisplay.textContent = `本关得分: ${score} (Sub-Level Score: ${score})`;
-        setTimeout(() => setLevel(nextLevel, nextSubLevel), 2000);
+        setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000); // 改为 1 秒
     }
 }
