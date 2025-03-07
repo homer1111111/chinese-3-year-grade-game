@@ -26,25 +26,25 @@
         <button onclick="exitArticleMode()">返回 (Back)</button>
     </div>
 
-<!-- 单字模式区域 (Single Word Mode Section) -->
-<div id="single-word-mode" style="display: none;">
-    <h2>单字模式 (Single Word Mode)</h2>
-    <p>点击汉字查看详情！(Click a character to view details!)</p>
-    <div id="single-word-list"></div>
-    <div id="single-word-display">
-        <h3 id="single-hanzi"></h3>
-        <p id="single-pinyin"></p>
-        <p id="single-meaning"></p>
-        <p id="single-strokes"></p>
-        <img id="single-animation-gif" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('single-animation-fallback').style.display='block';">
-        <div id="single-animation-fallback" style="display: none;">
-            <div id="single-animation"></div>
-            <br> <!-- 仅保留1行间距，向上移动2行 -->
-            <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
+    <!-- 单字模式区域 (Single Word Mode Section) -->
+    <div id="single-word-mode" style="display: none;">
+        <h2>单字模式 (Single Word Mode)</h2>
+        <p>点击汉字查看详情！(Click a character to view details!)</p>
+        <div id="single-word-list"></div>
+        <div id="single-word-display">
+            <h3 id="single-hanzi"></h3>
+            <p id="single-pinyin"></p>
+            <p id="single-meaning"></p>
+            <p id="single-strokes"></p>
+            <img id="single-animation-gif" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('single-animation-fallback').style.display='block';">
+            <div id="single-animation-fallback" style="display: none;">
+                <div id="single-animation"></div>
+                <br> <!-- 仅1行间距 -->
+                <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
+            </div>
         </div>
+        <button onclick="exitSingleWordMode()">返回 (Back)</button>
     </div>
-    <button onclick="exitSingleWordMode()">返回 (Back)</button>
-</div>
 
     <!-- 练习模式区域 (Practice Mode Section) -->
     <div id="practice-mode" style="display: none;">
