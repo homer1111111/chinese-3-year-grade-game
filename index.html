@@ -5,28 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>第九课 蔡伦造纸 (Chapter 9 - Cai Lun Invented the Paper)</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- 引入 Hanzi Writer 库 -->
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
 </head>
 <body>
     <h1>第九课 蔡伦造纸 (Chapter 9 - Cai Lun Invented the Paper)</h1>
-    
-    <!-- 模式选择 (Mode Selection) -->
     <div id="mode-selection">
         <button onclick="startArticleMode()">课文模式 (Article Mode)</button>
         <button onclick="startSingleWordMode()">单字模式 (Single Word Mode)</button>
         <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
         <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
     </div>
-
-    <!-- 课文模式区域 (Article Mode Section) -->
     <div id="article-mode" style="display: none;">
         <h2>课文模式 (Article Mode)</h2>
         <div id="article-content"></div>
         <button onclick="exitArticleMode()">返回 (Back)</button>
     </div>
-
-    <!-- 单字模式区域 (Single Word Mode Section) -->
     <div id="single-word-mode" style="display: none;">
         <h2>单字模式 (Single Word Mode)</h2>
         <p>点击汉字查看详情！(Click a character to view details!)</p>
@@ -39,14 +32,12 @@
             <img id="single-animation-gif" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('single-animation-fallback').style.display='block';">
             <div id="single-animation-fallback" style="display: none;">
                 <div id="single-animation"></div>
-                <br> <!-- 仅1行间距 -->
+                <br>
                 <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
             </div>
         </div>
         <button onclick="exitSingleWordMode()">返回 (Back)</button>
     </div>
-
-    <!-- 练习模式区域 (Practice Mode Section) -->
     <div id="practice-mode" style="display: none;">
         <h2>练习模式 (Practice Mode)</h2>
         <div class="flashcard" onclick="flipCard()">
@@ -61,8 +52,6 @@
         <button onclick="nextPracticeWord()">下一个 (Next)</button>
         <button onclick="exitPracticeMode()">返回 (Back)</button>
     </div>
-
-    <!-- 游戏模式区域 (Game Mode Section) -->
     <div id="game-mode" style="display: none;">
         <h2>游戏模式 (Game Mode)</h2>
         <p>点击汉字并选择正确的拼音！(Tap a character and select the correct pinyin!)</p>
@@ -101,10 +90,7 @@
             <button onclick="done()">完成 (Done)</button>
         </div>
     </div>
-
-    <!-- 音效 -->
     <audio id="celebrate-sound" src="https://freesound.org/data/previews/159/159402_1676144-lq.mp3"></audio>
-
     <script src="script.js"></script>
 </body>
 </html>
