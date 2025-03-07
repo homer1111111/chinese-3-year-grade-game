@@ -48,10 +48,8 @@ const articleMode = document.getElementById('article-mode');
 const articleContent = document.getElementById('article-content');
 const celebrateSound = document.getElementById('celebrate-sound');
 
-// 初始化显示历史最高分数
 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
-// 汉字和拼音数据
 const allWords = {
     'level-1-1': [
         { hanzi: '造', pinyin: 'zào', meaningCn: '制造', meaningEn: 'to make, to build', strokeCount: 12, animation: 'https://bishun.gjcha.com/9020.gif' },
@@ -121,7 +119,6 @@ const allUniqueWords = [
     { hanzi: '之', pinyin: 'zhī', meaningCn: '代词，表示“的”', meaningEn: 'possessive particle, "of"', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E4B.gif' }
 ];
 
-// 随机打乱数组
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -130,9 +127,8 @@ function shuffle(array) {
     return array;
 }
 
-// 课文模式
 function startArticleMode() {
-    modeSelection.style.display = 'flex'; // 确保初始样式正确
+    modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -142,11 +138,7 @@ function startArticleMode() {
 
 function showArticleContent() {
     let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
-    
-    // 在“树皮草”之间插入“、”
     text = text.replace("树皮草", "树皮、草");
-    
-    // 定义所有汉字的拼音映射
     const pinyinMap = {
         '古': 'gǔ', '代': 'dài', '没': 'méi', '有': 'yǒu', '纸': 'zhǐ', '人': 'rén', '们': 'men', '常': 'cháng', '把': 'bǎ', '字': 'zì', 
         '写': 'xiě', '在': 'zài', '竹': 'zhú', '片': 'piàn', '上': 'shàng', '很': 'hěn', '不': 'bù', '便': 'biàn', '公': 'gōng', '元': 'yuán', 
@@ -157,16 +149,10 @@ function showArticleContent() {
         '浆': 'jiāng', '再': 'zài', '铺': 'pù', '帘': 'lián', '干': 'gān', '以': 'yǐ', '后': 'hòu', '拿': 'ná', '下': 'xià', '来': 'lái', 
         '就': 'jiù', '是': 'shì', '发': 'fā', '明': 'míng', '术': 'shù', '四': 'sì', '大': 'dà', '之': 'zhī'
     };
-
-    // 判断是否为汉字（排除标点符号和数字）
     const isChineseChar = char => /[\u4E00-\u9FFF]/.test(char);
-
-    // 将文本分割成字符数组
     const chars = text.split('');
     let result = '';
     let lineCount = 0;
-
-    // 大屏幕每行17个字符，小屏幕无限制
     for (let i = 0; i < chars.length; i++) {
         const char = chars[i];
         if (isChineseChar(char)) {
@@ -175,25 +161,23 @@ function showArticleContent() {
         } else {
             result += `<span class="word-wrapper"><span class="non-hanzi">${char}</span></span>`;
         }
-        if (window.innerWidth > 600) { // 仅大屏幕限制17字
+        if (window.innerWidth > 600) {
             lineCount++;
             if (lineCount === 17 && i < chars.length - 1) {
-                result += '<br>'; // 每17个字符换行
+                result += '<br>';
                 lineCount = 0;
             }
         }
     }
-
     articleContent.innerHTML = result;
 }
 
 function exitArticleMode() {
     articleMode.style.display = 'none';
-    modeSelection.style.display = 'flex'; // 强制重置为flex布局
-    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+    modeSelection.style.display = 'flex';
+    modeSelection.style.flexWrap = 'nowrap';
 }
 
-// 单字模式
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
@@ -210,14 +194,12 @@ function showSingleWordList() {
             <span class="hanzi">${word.hanzi}</span>
         </div>
     `).join('');
-
     singleHanzi.textContent = '';
     singlePinyin.textContent = '';
     singleMeaning.textContent = '';
     singleStrokes.textContent = '';
     singleAnimationGif.style.display = 'none';
     singleAnimationFallback.style.display = 'none';
-
     const wordItems = singleWordList.querySelectorAll('.word-item');
     wordItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -226,7 +208,6 @@ function showSingleWordList() {
             if (word) {
                 wordItems.forEach(i => i.classList.remove('highlight'));
                 item.classList.add('highlight');
-
                 singleHanzi.textContent = word.hanzi;
                 singlePinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
                 singleMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
@@ -234,7 +215,6 @@ function showSingleWordList() {
                 singleAnimationGif.src = word.animation;
                 singleAnimationGif.style.display = 'block';
                 singleAnimationFallback.style.display = 'none';
-
                 if (singleHanziWriter) {
                     singleHanziWriter.setCharacter(word.hanzi);
                 } else {
@@ -259,11 +239,10 @@ function animateSingleStrokeOrder() {
 
 function exitSingleWordMode() {
     singleWordMode.style.display = 'none';
-    modeSelection.style.display = 'flex'; // 强制重置为flex布局
-    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+    modeSelection.style.display = 'flex';
+    modeSelection.style.flexWrap = 'nowrap';
 }
 
-// 练习模式
 function startPracticeMode() {
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
@@ -300,11 +279,10 @@ function nextPracticeWord() {
 
 function exitPracticeMode() {
     practiceMode.style.display = 'none';
-    modeSelection.style.display = 'flex'; // 强制重置为flex布局
-    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+    modeSelection.style.display = 'flex';
+    modeSelection.style.flexWrap = 'nowrap';
 }
 
-// 游戏模式
 function startGameMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
@@ -316,8 +294,8 @@ function startGameMode() {
 
 function exitGameMode() {
     gameMode.style.display = 'none';
-    modeSelection.style.display = 'flex'; // 强制重置为flex布局
-    modeSelection.style.flexWrap = 'nowrap'; // 确保不换行
+    modeSelection.style.display = 'flex';
+    modeSelection.style.flexWrap = 'nowrap';
 }
 
 function updateScoreDisplay() {
@@ -387,13 +365,16 @@ function fixLevel1Errors() {
     wrongWordsList.textContent = level1WrongWords.map(word => word.hanzi).join(' ');
     hanziContainer.innerHTML = '';
     pinyinContainer.innerHTML = '';
-    const shuffledWords = shuffle([...level1WrongWords]);
-    shuffledWords.forEach(word => {
+    const shuffledHanzi = shuffle([...level1WrongWords]);
+    const shuffledPinyin = shuffle([...level1WrongWords]);
+    shuffledHanzi.forEach(word => {
         const card = document.createElement('div');
         card.className = 'card';
         card.setAttribute('data-hanzi', word.hanzi);
         card.textContent = word.hanzi;
         hanziContainer.appendChild(card);
+    });
+    shuffledPinyin.forEach(word => {
         const zone = document.createElement('div');
         zone.className = 'drop-zone';
         zone.setAttribute('data-pinyin', word.pinyin);
@@ -425,14 +406,19 @@ function setLevel(level, subLevel) {
     hanziContainer.innerHTML = '';
     pinyinContainer.innerHTML = '';
 
-    const shuffledWords = shuffle([...words]);
-    shuffledWords.forEach(word => {
+    // 分别对汉字和拼音进行独立随机排序
+    const shuffledHanzi = shuffle([...words]); // 随机汉字顺序
+    const shuffledPinyin = shuffle([...words]); // 随机拼音顺序
+
+    shuffledHanzi.forEach(word => {
         const card = document.createElement('div');
         card.className = 'card';
         card.setAttribute('data-hanzi', word.hanzi);
         card.textContent = word.hanzi;
         hanziContainer.appendChild(card);
+    });
 
+    shuffledPinyin.forEach(word => {
         const zone = document.createElement('div');
         zone.className = 'drop-zone';
         zone.setAttribute('data-pinyin', word.pinyin);
@@ -463,9 +449,11 @@ function bindTapEvents() {
             const hanzi = selectedCard.getAttribute('data-hanzi');
             const pinyin = zone.getAttribute('data-pinyin');
             const correctMatch = {};
-            allWords['level-3-3'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
-            allWords['level-3-1'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
-            allWords['level-3-2'].forEach(word => correctMatch[word.hanzi] = word.pinyin);
+            Object.keys(allWords).forEach(level => {
+                allWords[level].forEach(word => {
+                    correctMatch[word.hanzi] = word.pinyin;
+                });
+            });
 
             if (correctMatch[hanzi] === pinyin) {
                 score += 10;
@@ -483,9 +471,9 @@ function bindTapEvents() {
                 zone.classList.add('wrong');
                 setTimeout(() => zone.classList.remove('wrong'), 500);
 
-                const wrongWord = { hanzi, pinyin };
-                if (!wrongWords.some(w => w.hanzi === hanzi)) wrongWords.push(wrongWord);
-                if (currentLevel === 1 && !level1WrongWords.some(w => w.hanzi === hanzi)) level1WrongWords.push(wrongWord);
+                const wrongWord = allUniqueWords.find(w => w.hanzi === hanzi);
+                if (wrongWord && !wrongWords.some(w => w.hanzi === hanzi)) wrongWords.push(wrongWord);
+                if (currentLevel === 1 && wrongWord && !level1WrongWords.some(w => w.hanzi === hanzi)) level1WrongWords.push(wrongWord);
                 selectedCard.classList.remove('selected');
                 selectedCard = null;
             }
