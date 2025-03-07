@@ -165,25 +165,40 @@ button {
 #article-mode button { background-color: #FF5722; color: white; }
 #article-mode button:hover { background-color: #F4511E; }
 
+/* 中屏幕样式（601px - 1000px） */
+@media (min-width: 601px) and (max-width: 1000px) {
+    #mode-selection {
+        flex-wrap: wrap; /* 中屏幕允许换行 */
+        gap: 15px; /* 减小间距 */
+        padding: 0 2vw; /* 添加内边距 */
+    }
+    
+    #mode-selection button {
+        padding: 10px 20px; /* 减小内边距 */
+        font-size: 18px; /* 减小字体 */
+        min-width: 150px; /* 减小最小宽度 */
+        flex: 1 1 45%; /* 每行两个按钮，弹性布局 */
+        max-width: 48%; /* 限制最大宽度 */
+        box-sizing: border-box; /* 包含内边距 */
+    }
+}
+
 /* 小屏幕（手机）样式 */
 @media (max-width: 600px) {
     h1 { font-size: 6vw; margin-bottom: 2vh; }
-    
     #mode-selection { 
-        flex-wrap: wrap; /* 允许换行 */
-        gap: 2vw; /* 减小间距 */
-        padding: 0 1vw; /* 添加内边距，避免贴边 */
+        flex-wrap: wrap;
+        gap: 2vw;
+        padding: 0 1vw;
     }
-    
     #mode-selection button { 
-        padding: 2vw 4vw; /* 减小内边距 */
-        font-size: 4vw; /* 减小字体 */
-        min-width: 0; /* 移除最小宽度 */
-        width: 45%; /* 每行两个按钮 */
-        margin: 1vw 0; /* 垂直间距 */
-        box-sizing: border-box; /* 包含内边距 */
+        padding: 2vw 4vw;
+        font-size: 4vw;
+        min-width: 0;
+        width: 45%;
+        margin: 1vw 0;
+        box-sizing: border-box;
     }
-    
     button { padding: 2.5vw 5vw; font-size: 4.5vw; }
     #controls { flex-wrap: wrap; gap: 2vw; }
     #practice-mode h2 { font-size: 5vw; }
