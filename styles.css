@@ -14,19 +14,22 @@ p { font-size: 18px; line-height: 1.5; }
     margin: 30px 0;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 30px; /* 按钮间距增大 */
+    flex-wrap: nowrap; /* 强制不换行 */
+    align-items: center; /* 垂直居中 */
 }
 
 #mode-selection button {
-    padding: 10px 20px;
-    font-size: 18px;
+    padding: 15px 25px; /* 按钮内边距增大 */
+    font-size: 22px; /* 按钮字体放大 */
     cursor: pointer;
     background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 5px;
-    min-width: 150px;
+    min-width: 180px; /* 按钮最小宽度放大 */
     touch-action: manipulation;
+    flex: 0 0 auto; /* 防止按钮被压缩 */
 }
 
 #mode-selection button:hover { background-color: #1976D2; }
@@ -104,90 +107,83 @@ button {
 #celebration button:last-of-type { background-color: #FF5722; color: white; }
 #celebration button:last-of-type:hover { background-color: #F4511E; }
 
+/* 单字模式相关样式 */
 #single-word-mode h2 { font-size: 28px; }
 #single-word-mode p { font-size: 18px; }
-#single-word-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px 0; }
-#single-word-list .word-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; }
-#single-word-list .pinyin { font-size: 16px; color: #666; margin-bottom: 5px; }
-#single-word-list .hanzi { font-size: 24px; }
-#single-word-list .word-item:hover { background-color: #e0e0e0; }
-#single-word-list .word-item.highlight { background-color: #FFFF99; border-color: #FF9800; }
-#single-word-display h3 { font-size: 48px; margin: 20px 0; }
-#single-word-display p { font-size: 18px; }
-#single-animation-gif { display: block; width: 150px; height: 150px; margin: 20px auto; border: 1px solid #ccc; }
-#single-animation-fallback { margin: 20px 0; }
-#single-animation { width: 150px; height: 150px; margin: 0 auto; border: 1px solid #ccc; }
-#single-word-mode button { background-color: #FF5722; color: white; }
-#single-word-mode button:hover { background-color: #F4511E; }
-
-#article-mode h2 { font-size: 28px; }
-#article-content { 
+#single-word-list { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 15px; 
     margin: 20px 0; 
-    line-height: 3; /* 为放大的拼音和汉字留出更多空间 */
-    white-space: pre-wrap; /* 保留空格和换行 */
 }
-#article-content .word-wrapper { 
-    display: inline-block; 
-    vertical-align: bottom; 
-    margin: 0 8px; /* 汉字之间的间隔增大 */
-}
-#article-content .word-item { 
+#single-word-list .word-item { 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    padding: 0; 
+    cursor: pointer; 
+    padding: 15px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    background-color: #f9f9f9; 
 }
-#article-content .pinyin { 
-    font-size: 20px; /* 拼音放大 */
+#single-word-list .pinyin { 
+    font-size: 20px; 
     color: #666; 
-    margin-bottom: 4px; /* 拼音与汉字的间距稍大 */
+    margin-bottom: 5px; 
 }
-#article-content .hanzi { 
-    font-size: 30px; /* 汉字放大 */
+#single-word-list .hanzi { 
+    font-size: 30px; 
 }
-#article-content .non-hanzi { 
-    display: inline; 
-    font-size: 30px; /* 与汉字大小一致 */
-    vertical-align: bottom; 
+#single-word-list .word-item:hover { 
+    background-color: #e0e0e0; 
 }
-#article-mode button { background-color: #FF5722; color: white; }
-#article-mode button:hover { background-color: #F4511E; }
+#single-word-list .word-item.highlight { 
+    background-color: #FFFF99; 
+    border-color: #FF9800; 
+}
+#single-word-display h3 { 
+    font-size: 48px; 
+    margin: 20px 0; 
+}
+#single-word-display p { 
+    font-size: 18px; 
+}
+#single-animation-gif { 
+    display: block; 
+    width: 150px; 
+    height: 150px; 
+    margin: 20px auto; 
+    border: 1px solid #ccc; 
+}
+#single-animation-fallback { 
+    margin: 20px 0; 
+    text-align: center; /* 确保按钮居中 */
+}
+#single-animation { 
+    width: 150px; 
+    height: 150px; 
+    margin: 0 auto; 
+    border: 1px solid #ccc; 
+}
+#single-word-mode button { 
+    background-color: #FF5722; 
+    color: white; 
+}
+#single-word-mode button:hover { 
+    background-color: #F4511E; 
+}
 
 /* 小屏幕（手机）样式 */
 @media (max-width: 600px) {
-    h1 { font-size: 6vw; margin-bottom: 2vh; }
-    p { font-size: 4vw; }
-    #mode-selection { flex-wrap: wrap; gap: 2vw; margin: 3vh 0; }
-    #mode-selection button { padding: 2.5vw 5vw; font-size: 4.5vw; min-width: 25vw; }
-    button { padding: 2.5vw 5vw; font-size: 4.5vw; }
-    #controls { flex-wrap: wrap; gap: 2vw; }
-    #practice-mode h2 { font-size: 5vw; }
-    .flashcard { width: 50vw; height: 50vw; }
-    #flashcard-hanzi { font-size: 12vw; }
-    #flashcard-pinyin, #flashcard-meaning { font-size: 4vw; }
-    #game-mode h2 { font-size: 5vw; }
-    #game-mode p { font-size: 4vw; }
-    #highest-score, #level, #score { font-size: 4vw; }
-    #level-complete h3, #level-total h3, #level-1-errors h3 { font-size: 5vw; }
-    #level-complete p, #level-total p, #level-1-errors p { font-size: 4vw; }
-    #wrong-words-list { font-size: 5vw; }
-    .card, .drop-zone { width: 18vw; height: 18vw; line-height: 18vw; font-size: 7vw; }
-    #celebration h2 { font-size: 6vw; }
-    #celebration h3 { font-size: 5vw; }
     #single-word-mode h2 { font-size: 5vw; }
     #single-word-mode p { font-size: 4vw; }
     #single-word-list { gap: 2vw; }
-    #single-word-list .word-item { padding: 2vw; }
-    #single-word-list .pinyin { font-size: 3.5vw; }
-    #single-word-list .hanzi { font-size: 5vw; }
+    #single-word-list .word-item { padding: 3vw; }
+    #single-word-list .pinyin { font-size: 4.5vw; }
+    #single-word-list .hanzi { font-size: 6vw; }
     #single-word-display h3 { font-size: 8vw; }
     #single-word-display p { font-size: 4vw; }
     #single-animation-gif { width: 35vw; height: 35vw; }
     #single-animation { width: 35vw; height: 35vw; }
-    #article-mode h2 { font-size: 5vw; }
-    #article-content { line-height: 3; }
-    #article-content .word-wrapper { margin: 0 2vw; } /* 小屏幕间隔稍小 */
-    #article-content .pinyin { font-size: 4.5vw; } /* 拼音放大 */
-    #article-content .hanzi { font-size: 6vw; } /* 汉字放大 */
-    #article-content .non-hanzi { font-size: 6vw; } /* 与汉字大小一致 */
 }
