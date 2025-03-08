@@ -16,13 +16,19 @@
         <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
     </div>
     <div id="article-mode" style="display: none;">
-        <h2>课文模式 (Article Mode)</h2>
-        <audio id="article-audio" src="./audio/article.mp3"></audio>
-        <button id="play-pause-button" onclick="playArticleAudio()">播放课文 (Play Article)</button>
-        <div id="article-content"></div>
-        <button onclick="exitArticleMode()">返回 (Back)</button>
-    </div>
-    <!-- 其他部分保持不变 -->
+    <h2>课文模式 (Article Mode)</h2>
+    <audio id="article-audio" src="./audio/article.mp3"></audio>
+    <button id="play-pause-button" onclick="playArticleAudio()">播放课文 (Play Article)</button>
+    <div id="article-content"></div>
+    <button onclick="exitArticleMode()">返回 (Back)</button>
+</div>
+
+<div id="mode-selection">
+    <button onclick="startArticleMode()">课文模式 (Article Mode)</button>
+    <button onclick="startSingleWordMode()">单字模式 (Single Word Mode)</button>
+    <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
+    <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
+</div>
     <div id="single-word-mode" style="display: none;">
         <h2>单字模式 (Single Word Mode)</h2>
         <p>点击汉字查看详情并播放发音！(Click a character to view details and play sound!)</p>
