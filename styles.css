@@ -142,10 +142,26 @@ button {
 #single-animation-gif { display: block; width: 150px; height: 150px; margin: 20px auto; border: 1px solid #ccc; }
 #single-animation-fallback { margin: 20px 0; text-align: center; }
 #single-animation { width: 150px; height: 150px; margin: 0 auto; border: 1px solid #ccc; }
-#single-word-mode button { background-color: #FF5722; color: white; }
-#single-word-mode button:nth-of-type(1) { background-color: #2196F3; }
-#single-word-mode button:nth-of-type(1):hover { background-color: #1976D2; }
-#single-word-mode button:last-of-type:hover { background-color: #F4511E; }
+/* 单字模式按钮样式调整 */
+#single-word-mode button[onclick="playSingleWordAudio()"] { 
+    display: none; /* 隐藏播放发音按钮 */
+}
+#single-word-mode button[onclick="animateSingleStrokeOrder()"] { 
+    display: block; /* 显示播放笔顺动画按钮 */
+    background-color: #2196F3; 
+    color: white; 
+    margin: 10px auto; /* 居中 */
+}
+#single-word-mode button[onclick="animateSingleStrokeOrder()"]:hover { 
+    background-color: #1976D2; 
+}
+#single-word-mode button[onclick="exitSingleWordMode()"] { 
+    display: block; 
+    background-color: #FF5722; 
+    color: white; 
+    margin: 20px auto; /* 居中显示 */
+}
+#single-word-mode button[onclick="exitSingleWordMode()"]:hover { background-color: #F4511E; }
 
 #article-mode h2 { font-size: 28px; }
 #article-content { 
@@ -165,7 +181,8 @@ button {
     padding: 0; 
 }
 #article-content .word-item.highlight { 
-    background-color: #FFB300; /* 深黄色高亮 */
+    background-color: #FFB300; /* 深黄色高光 */
+    transition: background-color 0.3s; /* 平滑过渡效果 */
 }
 #article-content .pinyin { 
     font-size: 20px; 
@@ -181,9 +198,9 @@ button {
     vertical-align: bottom; 
 }
 #article-mode button { background-color: #FF5722; color: white; }
-#article-mode button:nth-of-type(1) { background-color: #2196F3; }
-#article-mode button:nth-of-type(1):hover { background-color: #1976D2; }
-#article-mode button:last-of-type:hover { background-color: #F4511E; }
+#article-mode #play-pause-button { background-color: #2196F3; }
+#article-mode #play-pause-button:hover { background-color: #1976D2; }
+#article-mode button[onclick="exitArticleMode()"]:hover { background-color: #F4511E; }
 
 @media (min-width: 601px) and (max-width: 1000px) {
     #mode-selection { flex-wrap: wrap; gap: 15px; padding: 0 2vw; }
