@@ -137,7 +137,7 @@ function startArticleMode() {
 }
 
 function showArticleContent() {
-    let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
+    let text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮、草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
     text = text.replace("树皮草", "树皮、草");
     const pinyinMap = {
         '古': 'gǔ', '代': 'dài', '没': 'méi', '有': 'yǒu', '纸': 'zhǐ', '人': 'rén', '们': 'men', '常': 'cháng', '把': 'bǎ', '字': 'zì', 
@@ -157,7 +157,7 @@ function showArticleContent() {
         const char = chars[i];
         if (isChineseChar(char)) {
             const pinyin = pinyinMap[char] || '未知 (unknown)';
-            result += `<span class="word-wrapper"><span class="word-item"><span class="pinyin">${pinyin}</span><span class="hanzi">${char}</span></span></span>`;
+            result += `<span class="word-wrapper"><span class="word-item" data-hanzi="${char}"><span class="pinyin">${pinyin}</span><span class="hanzi">${char}</span></span></span>`;
         } else {
             result += `<span class="word-wrapper"><span class="non-hanzi">${char}</span></span>`;
         }
@@ -170,6 +170,28 @@ function showArticleContent() {
         }
     }
     articleContent.innerHTML = result;
+}
+
+function playArticleAudio() {
+    const audio = document.getElementById('article-audio');
+    const words = document.querySelectorAll('#article-content .word-item');
+    const text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮、草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
+    const chars = text.split('').filter(char => /[\u4E00-\u9FFF]/.test(char));
+    let index = 0;
+
+    audio.play();
+    audio.ontimeupdate = () => {
+        const durationPerChar = audio.duration / chars.length;
+        const currentIndex = Math.floor(audio.currentTime / durationPerChar);
+        if (currentIndex !== index && currentIndex < words.length) {
+            words[index].classList.remove('highlight');
+            index = currentIndex;
+            words[index].classList.add('highlight');
+        }
+    };
+    audio.onended = () => {
+        words.forEach(word => word.classList.remove('highlight'));
+    };
 }
 
 function exitArticleMode() {
@@ -215,6 +237,9 @@ function showSingleWordList() {
                 singleAnimationGif.src = word.animation;
                 singleAnimationGif.style.display = 'block';
                 singleAnimationFallback.style.display = 'none';
+                const audio = document.getElementById('single-word-audio');
+                audio.src = `/audio/${word.hanzi}.mp3`;
+                audio.play();
                 if (singleHanziWriter) {
                     singleHanziWriter.setCharacter(word.hanzi);
                 } else {
@@ -235,6 +260,10 @@ function showSingleWordList() {
 
 function animateSingleStrokeOrder() {
     if (singleHanziWriter) singleHanziWriter.animateCharacter();
+}
+
+function playSingleWordAudio() {
+    document.getElementById('single-word-audio').play();
 }
 
 function exitSingleWordMode() {
@@ -259,6 +288,8 @@ function showPracticeWord() {
     flashcardHanzi.textContent = word.hanzi;
     flashcardPinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
     flashcardMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
+    const audio = document.getElementById('practice-word-audio');
+    audio.src = `/audio/${word.hanzi}.mp3`;
     isFlipped = false;
     flashcard.classList.remove('flipped');
 }
@@ -266,6 +297,10 @@ function showPracticeWord() {
 function flipCard() {
     isFlipped = !isFlipped;
     flashcard.classList.toggle('flipped', isFlipped);
+}
+
+function playPracticeWordAudio() {
+    document.getElementById('practice-word-audio').play();
 }
 
 function nextPracticeWord() {
@@ -306,7 +341,6 @@ function updateScoreDisplay() {
 function saveGame() {
     const gameState = { score, totalScore, level1Score, level2Score, currentLevel, currentSubLevel, wrongWords, level1WrongWords, isFixingErrors };
     localStorage.setItem('chineseGameState', JSON.stringify(gameState));
-    // 移除 alert，不显示弹窗
 }
 
 function loadGame() {
@@ -466,7 +500,7 @@ function bindTapEvents() {
                 score += 10;
                 const remainingCards = Array.from(cards).filter(c => c.style.display !== 'none');
 
-                if (remainingCards.length === 1) { // 最后一个答案
+                if (remainingCards.length === 1) {
                     selectedCard.classList.remove('selected');
                     selectedCard.classList.add('correct');
                     zone.classList.remove('selected');
@@ -475,7 +509,6 @@ function bindTapEvents() {
                     selectedCard.style.display = 'none';
                     selectedCard = null;
 
-                    // 延迟 1 秒后保存并处理关卡完成
                     setTimeout(() => {
                         saveGame();
                         handleLevelComplete();
@@ -523,7 +556,7 @@ function handleLevelComplete() {
         updateScoreDisplay();
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-        setTimeout(() => setLevel(2, 1), 1000); // 改为 1 秒
+        setTimeout(() => setLevel(2, 1), 1000);
     } else if (currentLevel === 3 && currentSubLevel === 3) {
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 3 总分: ${totalScore} (Level 3 Total Score: ${totalScore})`;
@@ -539,7 +572,7 @@ function handleLevelComplete() {
             finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
             celebrateSound.play();
             setTimeout(() => { celebrateSound.pause(); celebrateSound.currentTime = 0; }, 3000);
-        }, 1000); // 改为 1 秒
+        }, 1000);
     } else if (currentLevel === 1 && currentSubLevel === 3) {
         if (level1WrongWords.length > 0) {
             fixLevel1Errors();
@@ -550,7 +583,7 @@ function handleLevelComplete() {
             updateScoreDisplay();
             levelTotal.style.display = 'block';
             levelTotalScoreDisplay.textContent = `关卡 1 总分: ${level1Score} (Level 1 Total Score: ${level1Score})`;
-            setTimeout(() => setLevel(2, 1), 1000); // 改为 1 秒
+            setTimeout(() => setLevel(2, 1), 1000);
         }
     } else if (currentLevel === 2 && currentSubLevel === 3) {
         wrongWords = [];
@@ -558,7 +591,7 @@ function handleLevelComplete() {
         updateScoreDisplay();
         levelTotal.style.display = 'block';
         levelTotalScoreDisplay.textContent = `关卡 2 总分: ${totalScore} (Level 2 Total Score: ${totalScore})`;
-        setTimeout(() => setLevel(3, 1), 1000); // 改为 1 秒
+        setTimeout(() => setLevel(3, 1), 1000);
     } else {
         let nextLevel = currentLevel;
         let nextSubLevel = currentSubLevel + 1;
@@ -571,12 +604,12 @@ function handleLevelComplete() {
                 updateScoreDisplay();
                 levelTotal.style.display = 'block';
                 levelTotalScoreDisplay.textContent = `关卡 ${nextLevel - 1} 总分: ${nextLevel === 2 ? level1Score : totalScore} (Level ${nextLevel - 1} Total Score: ${nextLevel === 2 ? level1Score : totalScore})`;
-                setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000); // 改为 1 秒
+                setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000);
                 return;
             }
         }
         levelComplete.style.display = 'block';
         levelScoreDisplay.textContent = `本关得分: ${score} (Sub-Level Score: ${score})`;
-        setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000); // 改为 1 秒
+        setTimeout(() => setLevel(nextLevel, nextSubLevel), 1000);
     }
 }
