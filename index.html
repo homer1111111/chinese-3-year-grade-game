@@ -17,12 +17,14 @@
     </div>
     <div id="article-mode" style="display: none;">
         <h2>课文模式 (Article Mode)</h2>
+        <audio id="article-audio" src="/audio/article.mp3"></audio>
+        <button onclick="playArticleAudio()">播放课文 (Play Article)</button>
         <div id="article-content"></div>
         <button onclick="exitArticleMode()">返回 (Back)</button>
     </div>
     <div id="single-word-mode" style="display: none;">
         <h2>单字模式 (Single Word Mode)</h2>
-        <p>点击汉字查看详情！(Click a character to view details!)</p>
+        <p>点击汉字查看详情并播放发音！(Click a character to view details and play sound!)</p>
         <div id="single-word-list"></div>
         <div id="single-word-display">
             <h3 id="single-hanzi"></h3>
@@ -35,6 +37,8 @@
                 <br>
                 <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
             </div>
+            <audio id="single-word-audio"></audio>
+            <button onclick="playSingleWordAudio()">播放发音 (Play Sound)</button>
         </div>
         <button onclick="exitSingleWordMode()">返回 (Back)</button>
     </div>
@@ -49,6 +53,8 @@
                 <p id="flashcard-meaning"></p>
             </div>
         </div>
+        <audio id="practice-word-audio"></audio>
+        <button onclick="playPracticeWordAudio()">播放发音 (Play Sound)</button>
         <button onclick="nextPracticeWord()">下一个 (Next)</button>
         <button onclick="exitPracticeMode()">返回 (Back)</button>
     </div>
