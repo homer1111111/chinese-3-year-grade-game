@@ -320,7 +320,7 @@ function showPracticeWord() {
     flashcardPinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
     flashcardMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
     const audio = document.getElementById('practice-word-audio');
-    audio.src = `/audio/${word.hanzi}.mp3`;
+    audio.src = `./audio/${word.hanzi}.mp3`;
     isFlipped = false;
     flashcard.classList.remove('flipped');
 }
