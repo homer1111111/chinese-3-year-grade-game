@@ -134,6 +134,8 @@ function startArticleMode() {
     singleWordMode.style.display = 'none';
     articleMode.style.display = 'block';
     showArticleContent();
+    const playPauseButton = document.getElementById('play-pause-button');
+    playPauseButton.textContent = '播放课文 (Play Article)';
 }
 
 function showArticleContent() {
@@ -172,29 +174,58 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
-function playArticleAudio() {
+function togglePlayPause() {
     const audio = document.getElementById('article-audio');
+    const playPauseButton = document.getElementById('play-pause-button');
     const words = document.querySelectorAll('#article-content .word-item');
     const text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮、草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
     const chars = text.split('').filter(char => /[\u4E00-\u9FFF]/.test(char));
     let index = 0;
 
-    audio.play();
-    audio.ontimeupdate = () => {
-        const durationPerChar = audio.duration / chars.length;
-        const currentIndex = Math.floor(audio.currentTime / durationPerChar);
-        if (currentIndex !== index && currentIndex < words.length) {
-            words[index].classList.remove('highlight');
-            index = currentIndex;
-            words[index].classList.add('highlight');
+    words.forEach(word => word.classList.remove('highlight'));
+
+    if (audio.paused) {
+        audio.play();
+        playPauseButton.textContent = '暂停 (Pause)';
+        if (audio.readyState >= 2) {
+            const durationPerChar = audio.duration / chars.length;
+            audio.ontimeupdate = () => {
+                const currentIndex = Math.min(Math.floor(audio.currentTime / durationPerChar), words.length - 1);
+                if (currentIndex !== index) {
+                    words[index].classList.remove('highlight');
+                    index = currentIndex;
+                    words[index].classList.add('highlight');
+                    words[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            };
+        } else {
+            audio.onloadedmetadata = () => {
+                const durationPerChar = audio.duration / chars.length;
+                audio.ontimeupdate = () => {
+                    const currentIndex = Math.min(Math.floor(audio.currentTime / durationPerChar), words.length - 1);
+                    if (currentIndex !== index) {
+                        words[index].classList.remove('highlight');
+                        index = currentIndex;
+                        words[index].classList.add('highlight');
+                        words[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                };
+            };
         }
-    };
+    } else {
+        audio.pause();
+        playPauseButton.textContent = '播放课文 (Play Article)';
+    }
+
     audio.onended = () => {
         words.forEach(word => word.classList.remove('highlight'));
+        playPauseButton.textContent = '播放课文 (Play Article)';
     };
 }
 
 function exitArticleMode() {
+    const audio = document.getElementById('article-audio');
+    audio.pause();
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
