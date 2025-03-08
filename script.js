@@ -184,11 +184,11 @@ function stopAllAudio() {
             try {
                 audio.pause();
                 audio.currentTime = 0;
-                audio.src = ''; // 清空 src
-                audio.load();   // 强制重置
-                audio.muted = true; // 临时静音
+                audio.src = '';
+                audio.load();
+                audio.muted = true;
                 console.log(`音频 ${audio.id} 已停止并重置，当前状态: paused=${audio.paused}`);
-                setTimeout(() => audio.muted = false, 100); // 恢复静音状态
+                setTimeout(() => audio.muted = false, 100);
             } catch (error) {
                 console.error(`停止音频 ${audio.id} 失败:`, error);
             }
@@ -203,7 +203,7 @@ function playArticleAudio() {
     const audioSrc = './audio/article.mp3';
     console.log("尝试加载课文音频:", audioSrc);
     
-    stopAllAudio(); // 播放前停止所有音频
+    stopAllAudio();
     audio.src = audioSrc;
 
     audio.onloadeddata = () => {
@@ -279,6 +279,7 @@ function exitArticleMode() {
     modeSelection.style.flexWrap = 'nowrap';
     console.log("完成退出课文模式");
 }
+
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
