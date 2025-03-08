@@ -172,7 +172,6 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
-
 function stopAllAudio() {
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach(audio => {
@@ -267,13 +266,12 @@ function startGameMode() {
 
 function exitArticleMode() {
     console.log("开始退出课文模式");
-    // 不调用 stopAllAudio()，音频继续播放
+    stopAllAudio(); // 停止音频
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
-    console.log("完成退出课文模式，音频未停止");
+    console.log("完成退出课文模式");
 }
-
 
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
