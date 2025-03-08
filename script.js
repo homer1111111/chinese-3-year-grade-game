@@ -172,6 +172,17 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
+// ... 其他变量和函数保持不变 ...
+
+function stopArticleAudio() {
+    const audio = document.getElementById('article-audio');
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        console.log("课文音频已停止");
+    }
+}
+
 function playArticleAudio() {
     const audio = document.getElementById('article-audio');
     const audioSrc = './audio/article.mp3';
@@ -181,17 +192,10 @@ function playArticleAudio() {
     audio.currentTime = 0;
     audio.src = audioSrc;
 
-    const words = document.querySelectorAll('#article-content .word-item');
-    const text = "古代没有纸，人们常常把字写在竹片上，很不方便。公元一〇五年，中国有个叫蔡伦的人，决心造出一种又好又方便的东西，给人们写字。他做了很多试验，把树皮、草和破布泡在水里，打成纸浆，再把纸浆铺上竹帘上。纸浆干了以后，拿下来就成了纸。纸是蔡伦发明的。造纸术是中国古代四大发明之一。";
-    const chars = text.split('').filter(char => /[\u4E00-\u9FFF]/.test(char));
-    let index = 0;
-
     audio.onloadeddata = () => {
         console.log("课文音频加载成功");
-        // 设置播放速度（如果需要）
-        audio.playbackRate = 0.85; // 确认是否需要此行
         audio.play()
-            .then(() => console.log("课文音频开始播放，速度:", audio.playbackRate))
+            .then(() => console.log("课文音频开始播放"))
             .catch(error => console.error("播放课文失败:", error));
     };
 
@@ -199,33 +203,62 @@ function playArticleAudio() {
         console.error("课文音频加载失败，可能路径错误或文件损坏");
     };
 
-    audio.ontimeupdate = () => {
-        // 调整 durationPerChar 以适配播放速度
-        const playbackRate = audio.playbackRate || 1; // 默认 1 倍速
-        const adjustedDuration = audio.duration / playbackRate; // 实际播放时长
-        const durationPerChar = adjustedDuration / chars.length;
-        const currentIndex = Math.floor(audio.currentTime / durationPerChar);
-        if (currentIndex !== index && currentIndex < words.length) {
-            words[index].classList.remove('highlight');
-            index = currentIndex;
-            words[index].classList.add('highlight');
-        }
-    };
-
     audio.onended = () => {
         console.log("课文音频播放结束");
-        words.forEach(word => word.classList.remove('highlight'));
     };
 
     audio.load();
 }
 
+function startArticleMode() {
+    modeSelection.style.display = 'flex';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'block';
+    showArticleContent();
+}
+
+function startSingleWordMode() {
+    stopArticleAudio();
+    modeSelection.style.display = 'flex';
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    singleWordMode.style.display = 'block';
+    showSingleWordList();
+}
+
+function startPracticeMode() {
+    stopArticleAudio();
+    practiceIndex = 0;
+    practiceWords = shuffle([...allUniqueWords]);
+    modeSelection.style.display = 'flex';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    practiceMode.style.display = 'block';
+    showPracticeWord();
+}
+
+function startGameMode() {
+    stopArticleAudio();
+    modeSelection.style.display = 'flex';
+    practiceMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    gameMode.style.display = 'block';
+    setLevel(currentLevel, currentSubLevel);
+}
+
 function exitArticleMode() {
+    stopArticleAudio();
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
 }
 
+// ... 其他函数保持不变 ...
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
