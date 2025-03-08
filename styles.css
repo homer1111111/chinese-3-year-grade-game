@@ -79,6 +79,8 @@ button {
 #flashcard-pinyin, #flashcard-meaning { font-size: 18px; margin: 5px 0; }
 #practice-mode button:nth-of-type(1) { background-color: #4CAF50; color: white; }
 #practice-mode button:nth-of-type(1):hover { background-color: #45a049; }
+#practice-mode button:nth-of-type(2) { background-color: #2196F3; color: white; }
+#practice-mode button:nth-of-type(2):hover { background-color: #1976D2; }
 #practice-mode button:last-of-type { background-color: #FF5722; color: white; }
 #practice-mode button:last-of-type:hover { background-color: #F4511E; }
 
@@ -106,10 +108,10 @@ button {
     transition: background-color 0.3s; 
 }
 .drop-zone { border-style: dashed; border-color: #666; }
-.card.selected { background-color: #FFB300; } /* 汉字选中为深黄色 */
-.drop-zone.selected { background-color: #616161; } /* 拼音选中为深灰色 */
-.correct { background: #90ee90; } /* 正确时为绿色 */
-.wrong { background: #ff6347; } /* 错误时为红色 */
+.card.selected { background-color: #FFB300; }
+.drop-zone.selected { background-color: #616161; }
+.correct { background: #90ee90; }
+.wrong { background: #ff6347; }
 #celebration { margin-top: 20px; }
 #celebration h2 { font-size: 28px; }
 #celebration h3 { font-size: 24px; margin: 10px 0; }
@@ -141,7 +143,9 @@ button {
 #single-animation-fallback { margin: 20px 0; text-align: center; }
 #single-animation { width: 150px; height: 150px; margin: 0 auto; border: 1px solid #ccc; }
 #single-word-mode button { background-color: #FF5722; color: white; }
-#single-word-mode button:hover { background-color: #F4511E; }
+#single-word-mode button:nth-of-type(1) { background-color: #2196F3; }
+#single-word-mode button:nth-of-type(1):hover { background-color: #1976D2; }
+#single-word-mode button:last-of-type:hover { background-color: #F4511E; }
 
 #article-mode h2 { font-size: 28px; }
 #article-content { 
@@ -160,6 +164,9 @@ button {
     align-items: center; 
     padding: 0; 
 }
+#article-content .word-item.highlight { 
+    background-color: #FFB300; /* 深黄色高亮 */
+}
 #article-content .pinyin { 
     font-size: 20px; 
     color: #666; 
@@ -174,39 +181,19 @@ button {
     vertical-align: bottom; 
 }
 #article-mode button { background-color: #FF5722; color: white; }
-#article-mode button:hover { background-color: #F4511E; }
+#article-mode button:nth-of-type(1) { background-color: #2196F3; }
+#article-mode button:nth-of-type(1):hover { background-color: #1976D2; }
+#article-mode button:last-of-type:hover { background-color: #F4511E; }
 
 @media (min-width: 601px) and (max-width: 1000px) {
-    #mode-selection {
-        flex-wrap: wrap;
-        gap: 15px;
-        padding: 0 2vw;
-    }
-    #mode-selection button {
-        padding: 10px 20px;
-        font-size: 18px;
-        min-width: 150px;
-        flex: 1 1 45%;
-        max-width: 48%;
-        box-sizing: border-box;
-    }
+    #mode-selection { flex-wrap: wrap; gap: 15px; padding: 0 2vw; }
+    #mode-selection button { padding: 10px 20px; font-size: 18px; min-width: 150px; flex: 1 1 45%; max-width: 48%; box-sizing: border-box; }
 }
 
 @media (max-width: 600px) {
     h1 { font-size: 6vw; margin-bottom: 2vh; }
-    #mode-selection { 
-        flex-wrap: wrap;
-        gap: 2vw;
-        padding: 0 1vw;
-    }
-    #mode-selection button { 
-        padding: 2vw 4vw;
-        font-size: 4vw;
-        min-width: 0;
-        width: 45%;
-        margin: 1vw 0;
-        box-sizing: border-box;
-    }
+    #mode-selection { flex-wrap: wrap; gap: 2vw; padding: 0 1vw; }
+    #mode-selection button { padding: 2vw 4vw; font-size: 4vw; min-width: 0; width: 45%; margin: 1vw 0; box-sizing: border-box; }
     button { padding: 2.5vw 5vw; font-size: 4.5vw; }
     #controls { flex-wrap: wrap; gap: 2vw; }
     #practice-mode h2 { font-size: 5vw; }
@@ -233,10 +220,7 @@ button {
     #single-animation-gif { width: 35vw; height: 35vw; }
     #single-animation { width: 35vw; height: 35vw; }
     #article-mode h2 { font-size: 5vw; }
-    #article-content { 
-        line-height: 3; 
-        white-space: normal; 
-    }
+    #article-content { line-height: 3; white-space: normal; }
     #article-content .word-wrapper { margin: 0 2vw; }
     #article-content .pinyin { font-size: 4.5vw; }
     #article-content .hanzi { font-size: 6vw; }
