@@ -217,6 +217,25 @@ function playArticleAudio() {
     audio.load();
 }
 
+function playSingleWordAudio() {
+    const selectedHanzi = singleHanzi.textContent;
+    if (selectedHanzi) {
+        const audio = document.getElementById('single-word-audio');
+        const audioSrc = `./audio/${selectedHanzi}.mp3`;
+        console.log(`加载单字音频: ${audioSrc}`);
+        audio.src = audioSrc;
+        audio.play().catch(error => console.error(`播放 ${selectedHanzi} 失败:`, error));
+    } else {
+        console.error("未选择任何汉字");
+    }
+}
+
+function playPracticeWordAudio() {
+    const audio = document.getElementById('practice-word-audio');
+    console.log(`加载练习音频: ${audio.src}`);
+    audio.play().catch(error => console.error("播放练习音频失败:", error));
+}
+
 function startArticleMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
@@ -269,15 +288,31 @@ function exitArticleMode() {
     console.log("完成退出课文模式");
 }
 
-// 全局点击事件监听器
+// 全局点击事件监听器，仅在课文模式生效
 document.addEventListener('click', function(event) {
+    const articleMode = document.getElementById('article-mode');
     const playButton = document.getElementById('play-pause-button');
-    // 如果点击的不是“播放课文”按钮或其子元素，停止所有音频
-    if (event.target !== playButton && !playButton.contains(event.target)) {
-        console.log("检测到非播放按钮点击，停止所有音频");
-        stopAllAudio();
+    const singleWordPlayButton = document.querySelector('button[onclick="playSingleWordAudio()"]');
+    const practiceWordPlayButton = document.querySelector('button[onclick="playPracticeWordAudio()"]');
+
+    // 仅在课文模式显示时处理
+    if (articleMode.style.display === 'block') {
+        // 如果点击的是课文模式的播放按钮，不停止音频
+        if (event.target === playButton || playButton.contains(event.target)) {
+            console.log("点击课文播放按钮，不停止音频");
+        } else {
+            console.log("课文模式下检测到非播放按钮点击，停止所有音频");
+            stopAllAudio();
+        }
     } else {
-        console.log("点击播放按钮，不停止音频");
+        // 在单字模式或练习模式下，排除播放按钮点击
+        if ((event.target === singleWordPlayButton || singleWordPlayButton.contains(event.target)) ||
+            (event.target === practiceWordPlayButton || practiceWordPlayButton.contains(event.target))) {
+            console.log("点击单字或练习播放按钮，不停止音频");
+        } else {
+            console.log("非课文模式下检测到非播放按钮点击，停止所有音频");
+            stopAllAudio();
+        }
     }
 });
 
