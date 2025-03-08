@@ -172,16 +172,28 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
-function stopArticleAudio() {
-    const audio = document.getElementById('article-audio');
-    if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.src = ''; // 清空 src 以确保停止
-        console.log("课文音频已停止并重置");
-    } else {
-        console.error("未找到 article-audio 元素");
-    }
+function stopAllAudio() {
+    const audioElements = [
+        document.getElementById('article-audio'),
+        document.getElementById('single-word-audio'),
+        document.getElementById('practice-word-audio'),
+        document.getElementById('celebrate-sound')
+    ];
+    audioElements.forEach(audio => {
+        if (audio) {
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.src = ''; // 清空 src
+                audio.load();   // 强制重置
+                console.log(`音频 ${audio.id} 已停止并重置`);
+            } catch (error) {
+                console.error(`停止音频 ${audio.id} 失败:`, error);
+            }
+        } else {
+            console.warn(`未找到音频元素: ${audio ? audio.id : '未知'}`);
+        }
+    });
 }
 
 function playArticleAudio() {
@@ -189,8 +201,7 @@ function playArticleAudio() {
     const audioSrc = './audio/article.mp3';
     console.log("尝试加载课文音频:", audioSrc);
     
-    audio.pause();
-    audio.currentTime = 0;
+    stopAllAudio(); // 播放前停止所有音频
     audio.src = audioSrc;
 
     audio.onloadeddata = () => {
@@ -221,19 +232,20 @@ function startArticleMode() {
 }
 
 function startSingleWordMode() {
-    console.log("切换到单字模式");
-    stopArticleAudio();
+    console.log("开始切换到单字模式");
+    stopAllAudio();
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
     articleMode.style.display = 'none';
     singleWordMode.style.display = 'block';
     showSingleWordList();
+    console.log("完成切换到单字模式");
 }
 
 function startPracticeMode() {
-    console.log("切换到练习模式");
-    stopArticleAudio();
+    console.log("开始切换到练习模式");
+    stopAllAudio();
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -242,27 +254,29 @@ function startPracticeMode() {
     articleMode.style.display = 'none';
     practiceMode.style.display = 'block';
     showPracticeWord();
+    console.log("完成切换到练习模式");
 }
 
 function startGameMode() {
-    console.log("切换到游戏模式");
-    stopArticleAudio();
+    console.log("开始切换到游戏模式");
+    stopAllAudio();
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
     articleMode.style.display = 'none';
     gameMode.style.display = 'block';
     setLevel(currentLevel, currentSubLevel);
+    console.log("完成切换到游戏模式");
 }
 
 function exitArticleMode() {
-    console.log("退出课文模式");
-    stopArticleAudio();
+    console.log("开始退出课文模式");
+    stopAllAudio();
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
+    console.log("完成退出课文模式");
 }
-
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
