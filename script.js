@@ -247,11 +247,7 @@ function startArticleMode() {
 
 function startSingleWordMode() {
     console.log("开始切换到单字模式");
-    const articleAudio = document.getElementById('article-audio');
-    if (articleAudio) {
-        articleAudio.pause(); // 仅停止课文音频
-        console.log("课文音频已停止");
-    }
+    stopAllAudio(); // 主菜单切换时停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -263,11 +259,7 @@ function startSingleWordMode() {
 
 function startPracticeMode() {
     console.log("开始切换到练习模式");
-    const articleAudio = document.getElementById('article-audio');
-    if (articleAudio) {
-        articleAudio.pause(); // 仅停止课文音频
-        console.log("课文音频已停止");
-    }
+    stopAllAudio(); // 主菜单切换时停止音频
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -281,7 +273,7 @@ function startPracticeMode() {
 
 function startGameMode() {
     console.log("开始切换到游戏模式");
-    stopAllAudio(); // 游戏模式停止所有音频
+    stopAllAudio(); // 主菜单切换时停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -293,7 +285,7 @@ function startGameMode() {
 
 function exitArticleMode() {
     console.log("开始退出课文模式");
-    stopAllAudio(); // 返回主菜单停止所有音频
+    stopAllAudio(); // 返回主菜单停止音频
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
