@@ -119,17 +119,6 @@ const allUniqueWords = [
     { hanzi: '之', pinyin: 'zhī', meaningCn: '代词，表示“的”', meaningEn: 'possessive particle, "of"', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E4B.gif' }
 ];
 
-// 辅助函数：暂停所有音频
-function pauseAllAudio() {
-    const audioElements = [document.getElementById('article-audio'), document.getElementById('single-word-audio'), document.getElementById('practice-word-audio'), celebrateSound];
-    audioElements.forEach(audio => {
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0; // 重置播放位置
-        }
-    });
-}
-
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -139,7 +128,6 @@ function shuffle(array) {
 }
 
 function startArticleMode() {
-    pauseAllAudio(); // 暂停所有音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -186,7 +174,6 @@ function showArticleContent() {
 
 function playArticleAudio() {
     const audio = document.getElementById('article-audio');
-    pauseAllAudio(); // 暂停其他音频
     audio.src = './audio/article.mp3'; // 确保路径正确
     console.log("尝试加载课文音频: ./audio/article.mp3");
     const words = document.querySelectorAll('#article-content .word-item');
@@ -198,7 +185,7 @@ function playArticleAudio() {
         console.log("课文音频加载成功");
         audio.play().catch(error => console.error("播放课文失败:", error));
     };
-    audio.onerror = () => console.error("课文音频加载失败");
+    audio.onerror = () => console.error("课文音频加载失败，可能路径错误或文件损坏");
     audio.ontimeupdate = () => {
         const durationPerChar = audio.duration / chars.length;
         const currentIndex = Math.floor(audio.currentTime / durationPerChar);
@@ -214,14 +201,12 @@ function playArticleAudio() {
 }
 
 function exitArticleMode() {
-    pauseAllAudio(); // 暂停所有音频
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
 }
 
 function startSingleWordMode() {
-    pauseAllAudio(); // 暂停所有音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -259,7 +244,6 @@ function showSingleWordList() {
                 singleAnimationGif.style.display = 'block';
                 singleAnimationFallback.style.display = 'none';
                 const audio = document.getElementById('single-word-audio');
-                pauseAllAudio(); // 暂停其他音频
                 audio.src = `./audio/${word.hanzi}.mp3`;
                 console.log(`加载音频: ./audio/${word.hanzi}.mp3`);
                 audio.play().catch(error => console.error(`播放 ${word.hanzi} 失败:`, error));
@@ -289,7 +273,6 @@ function playSingleWordAudio() {
     const selectedHanzi = singleHanzi.textContent;
     if (selectedHanzi) {
         const audio = document.getElementById('single-word-audio');
-        pauseAllAudio(); // 暂停其他音频
         audio.src = `./audio/${selectedHanzi}.mp3`;
         console.log(`加载音频: ./audio/${selectedHanzi}.mp3`);
         audio.play().catch(error => console.error(`播放 ${selectedHanzi} 失败:`, error));
@@ -299,14 +282,12 @@ function playSingleWordAudio() {
 }
 
 function exitSingleWordMode() {
-    pauseAllAudio(); // 暂停所有音频
     singleWordMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
 }
 
 function startPracticeMode() {
-    pauseAllAudio(); // 暂停所有音频
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -323,7 +304,6 @@ function showPracticeWord() {
     flashcardPinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
     flashcardMeaning.innerHTML = `含义: ${word.meaningCn}<br>Meaning: ${word.meaningEn}`;
     const audio = document.getElementById('practice-word-audio');
-    pauseAllAudio(); // 暂停其他音频
     audio.src = `./audio/${word.hanzi}.mp3`;
     console.log(`加载音频: ./audio/${word.hanzi}.mp3`);
     isFlipped = false;
@@ -337,7 +317,6 @@ function flipCard() {
 
 function playPracticeWordAudio() {
     const audio = document.getElementById('practice-word-audio');
-    pauseAllAudio(); // 暂停其他音频
     console.log(`加载音频: ${audio.src}`);
     audio.play().catch(error => console.error("播放练习音频失败:", error));
 }
@@ -352,14 +331,12 @@ function nextPracticeWord() {
 }
 
 function exitPracticeMode() {
-    pauseAllAudio(); // 暂停所有音频
     practiceMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
 }
 
 function startGameMode() {
-    pauseAllAudio(); // 暂停所有音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -369,7 +346,6 @@ function startGameMode() {
 }
 
 function exitGameMode() {
-    pauseAllAudio(); // 暂停所有音频
     gameMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
