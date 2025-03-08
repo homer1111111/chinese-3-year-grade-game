@@ -172,14 +172,15 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
-// ... 其他变量和函数保持不变 ...
-
 function stopArticleAudio() {
     const audio = document.getElementById('article-audio');
     if (audio) {
         audio.pause();
         audio.currentTime = 0;
-        console.log("课文音频已停止");
+        audio.src = ''; // 清空 src 以确保停止
+        console.log("课文音频已停止并重置");
+    } else {
+        console.error("未找到 article-audio 元素");
     }
 }
 
@@ -220,6 +221,7 @@ function startArticleMode() {
 }
 
 function startSingleWordMode() {
+    console.log("切换到单字模式");
     stopArticleAudio();
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
@@ -230,6 +232,7 @@ function startSingleWordMode() {
 }
 
 function startPracticeMode() {
+    console.log("切换到练习模式");
     stopArticleAudio();
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
@@ -242,6 +245,7 @@ function startPracticeMode() {
 }
 
 function startGameMode() {
+    console.log("切换到游戏模式");
     stopArticleAudio();
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
@@ -252,13 +256,13 @@ function startGameMode() {
 }
 
 function exitArticleMode() {
+    console.log("退出课文模式");
     stopArticleAudio();
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
 }
 
-// ... 其他函数保持不变 ...
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
