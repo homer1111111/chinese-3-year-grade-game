@@ -228,7 +228,6 @@ function startArticleMode() {
 
 function startSingleWordMode() {
     console.log("开始切换到单字模式");
-    stopAllAudio(); // 停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -240,7 +239,6 @@ function startSingleWordMode() {
 
 function startPracticeMode() {
     console.log("开始切换到练习模式");
-    stopAllAudio(); // 停止音频
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -254,7 +252,6 @@ function startPracticeMode() {
 
 function startGameMode() {
     console.log("开始切换到游戏模式");
-    stopAllAudio(); // 停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -266,12 +263,23 @@ function startGameMode() {
 
 function exitArticleMode() {
     console.log("开始退出课文模式");
-    stopAllAudio(); // 停止音频
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
     console.log("完成退出课文模式");
 }
+
+// 全局点击事件监听器
+document.addEventListener('click', function(event) {
+    const playButton = document.getElementById('play-pause-button');
+    // 如果点击的不是“播放课文”按钮或其子元素，停止所有音频
+    if (event.target !== playButton && !playButton.contains(event.target)) {
+        console.log("检测到非播放按钮点击，停止所有音频");
+        stopAllAudio();
+    } else {
+        console.log("点击播放按钮，不停止音频");
+    }
+});
 
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
