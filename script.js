@@ -186,12 +186,14 @@ function stopAllAudio() {
                 audio.currentTime = 0;
                 audio.src = ''; // 清空 src
                 audio.load();   // 强制重置
-                console.log(`音频 ${audio.id} 已停止并重置`);
+                audio.muted = true; // 临时静音
+                console.log(`音频 ${audio.id} 已停止并重置，当前状态: paused=${audio.paused}`);
+                setTimeout(() => audio.muted = false, 100); // 恢复静音状态
             } catch (error) {
                 console.error(`停止音频 ${audio.id} 失败:`, error);
             }
         } else {
-            console.warn(`未找到音频元素: ${audio ? audio.id : '未知'}`);
+            console.warn(`未找到音频元素`);
         }
     });
 }
