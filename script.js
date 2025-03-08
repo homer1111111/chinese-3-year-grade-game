@@ -247,6 +247,11 @@ function startArticleMode() {
 
 function startSingleWordMode() {
     console.log("开始切换到单字模式");
+    const articleAudio = document.getElementById('article-audio');
+    if (articleAudio) {
+        articleAudio.pause(); // 仅停止课文音频
+        console.log("课文音频已停止");
+    }
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -258,6 +263,11 @@ function startSingleWordMode() {
 
 function startPracticeMode() {
     console.log("开始切换到练习模式");
+    const articleAudio = document.getElementById('article-audio');
+    if (articleAudio) {
+        articleAudio.pause(); // 仅停止课文音频
+        console.log("课文音频已停止");
+    }
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -271,6 +281,7 @@ function startPracticeMode() {
 
 function startGameMode() {
     console.log("开始切换到游戏模式");
+    stopAllAudio(); // 游戏模式停止所有音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -282,37 +293,21 @@ function startGameMode() {
 
 function exitArticleMode() {
     console.log("开始退出课文模式");
+    stopAllAudio(); // 返回主菜单停止所有音频
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
     console.log("完成退出课文模式");
 }
 
-// 全局点击事件监听器，仅在课文模式生效
-document.addEventListener('click', function(event) {
-    const articleMode = document.getElementById('article-mode');
+// 课文模式内的点击处理
+document.getElementById('article-mode').addEventListener('click', function(event) {
     const playButton = document.getElementById('play-pause-button');
-    const singleWordPlayButton = document.querySelector('button[onclick="playSingleWordAudio()"]');
-    const practiceWordPlayButton = document.querySelector('button[onclick="playPracticeWordAudio()"]');
-
-    // 仅在课文模式显示时处理
-    if (articleMode.style.display === 'block') {
-        // 如果点击的是课文模式的播放按钮，不停止音频
-        if (event.target === playButton || playButton.contains(event.target)) {
-            console.log("点击课文播放按钮，不停止音频");
-        } else {
-            console.log("课文模式下检测到非播放按钮点击，停止所有音频");
-            stopAllAudio();
-        }
+    if (event.target !== playButton && !playButton.contains(event.target)) {
+        console.log("课文模式下检测到非播放按钮点击，停止所有音频");
+        stopAllAudio();
     } else {
-        // 在单字模式或练习模式下，排除播放按钮点击
-        if ((event.target === singleWordPlayButton || singleWordPlayButton.contains(event.target)) ||
-            (event.target === practiceWordPlayButton || practiceWordPlayButton.contains(event.target))) {
-            console.log("点击单字或练习播放按钮，不停止音频");
-        } else {
-            console.log("非课文模式下检测到非播放按钮点击，停止所有音频");
-            stopAllAudio();
-        }
+        console.log("点击课文播放按钮，不停止音频");
     }
 });
 
