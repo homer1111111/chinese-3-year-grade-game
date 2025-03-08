@@ -196,7 +196,7 @@ function playArticleAudio() {
     const audioSrc = './audio/article.mp3';
     console.log("尝试加载课文音频:", audioSrc);
     
-    stopAllAudio(); // 播放新音频前停止所有音频
+    stopAllAudio(); // 播放前停止所有音频
     audio.src = audioSrc;
 
     audio.onloadeddata = () => {
