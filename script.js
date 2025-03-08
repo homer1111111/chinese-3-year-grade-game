@@ -172,13 +172,9 @@ function showArticleContent() {
     articleContent.innerHTML = result;
 }
 
+
 function stopAllAudio() {
-    const audioElements = [
-        document.getElementById('article-audio'),
-        document.getElementById('single-word-audio'),
-        document.getElementById('practice-word-audio'),
-        document.getElementById('celebrate-sound')
-    ];
+    const audioElements = document.querySelectorAll('audio');
     audioElements.forEach(audio => {
         if (audio) {
             try {
@@ -187,13 +183,11 @@ function stopAllAudio() {
                 audio.src = '';
                 audio.load();
                 audio.muted = true;
-                console.log(`音频 ${audio.id} 已停止并重置，当前状态: paused=${audio.paused}`);
+                console.log(`音频 ${audio.id || '无ID'} 已停止并重置，当前状态: paused=${audio.paused}`);
                 setTimeout(() => audio.muted = false, 100);
             } catch (error) {
-                console.error(`停止音频 ${audio.id} 失败:`, error);
+                console.error(`停止音频 ${audio.id || '无ID'} 失败:`, error);
             }
-        } else {
-            console.warn(`未找到音频元素`);
         }
     });
 }
@@ -203,7 +197,7 @@ function playArticleAudio() {
     const audioSrc = './audio/article.mp3';
     console.log("尝试加载课文音频:", audioSrc);
     
-    stopAllAudio();
+    stopAllAudio(); // 播放新音频前停止所有音频
     audio.src = audioSrc;
 
     audio.onloadeddata = () => {
@@ -235,7 +229,7 @@ function startArticleMode() {
 
 function startSingleWordMode() {
     console.log("开始切换到单字模式");
-    stopAllAudio();
+    stopAllAudio(); // 停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
@@ -247,7 +241,7 @@ function startSingleWordMode() {
 
 function startPracticeMode() {
     console.log("开始切换到练习模式");
-    stopAllAudio();
+    stopAllAudio(); // 停止音频
     practiceIndex = 0;
     practiceWords = shuffle([...allUniqueWords]);
     modeSelection.style.display = 'flex';
@@ -261,7 +255,7 @@ function startPracticeMode() {
 
 function startGameMode() {
     console.log("开始切换到游戏模式");
-    stopAllAudio();
+    stopAllAudio(); // 停止音频
     modeSelection.style.display = 'flex';
     practiceMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -273,12 +267,13 @@ function startGameMode() {
 
 function exitArticleMode() {
     console.log("开始退出课文模式");
-    stopAllAudio();
+    // 不调用 stopAllAudio()，音频继续播放
     articleMode.style.display = 'none';
     modeSelection.style.display = 'flex';
     modeSelection.style.flexWrap = 'nowrap';
-    console.log("完成退出课文模式");
+    console.log("完成退出课文模式，音频未停止");
 }
+
 
 function startSingleWordMode() {
     modeSelection.style.display = 'flex';
